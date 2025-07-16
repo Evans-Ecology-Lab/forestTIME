@@ -21,7 +21,10 @@ accomplished with \code{\link[=inter_extra_polate]{inter_extra_polate()}} and th
 handled with \code{\link[=step_interp]{step_interp()}}. Also converts temporary \code{999} values created by
 \code{\link[=expand_data]{expand_data()}} back to \code{NA}s.  This also assigns a value for \code{TPA_UNADJ}
 based on \code{DESIGNCD} and interpolated values of \code{DIA} according to Appendix G
-of the FIADB user guide.
+of the FIADB user guide and adds an \code{EXPNS} column equivalent to the one in
+FIA, but accounting for the fact that the data now contains interpolated
+plots (i.e. \code{EXPNS} = the state land area divided by the total number of
+plots in that state in that year in the \emph{interpolated} data).
 }
 \note{
 If \code{HT} or \code{ACTUALHT} are extrapolated to values < 4.5 (or < 1 for
