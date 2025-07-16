@@ -1,5 +1,8 @@
 # forestTIME.builder (development version)
 
+- `fia_annualize()` now adds and `EXPNS` column calculated as the total land area of the state in acres divided by the number of plots in the interpolated data.  It *should* be usable in the same ways the `EXPNS` column in the "raw" FIA data can be used.
+- Renames the `state_codes` dataset to `state_areas` and adds a column for state land area in acres.
+
 # forestTIME.builder 2.0.0
 
 - The separate `prep_carbon()` and `estimate_carbon()` functions are no longer exported and are replaced by the combined `fia_estimate()` function.
