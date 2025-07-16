@@ -83,13 +83,16 @@ fia_download <- function(
     useragent = "forestTIME-builder (https://github.com/mekevans/forestTIME-builder)"
   )
 
-  # TODO: check response for issues, retries, whatever
+  # TODO: Don't error if download fails, instead check response for issues and
+  # retry.  Then warn if only some downloads failed.
   # https://github.com/mekevans/forestTIME-builder/issues/91
 
-  print(resp)
-  if (!fs::file_exists(resp$destfile)) {
-    cli::cli_abort(c("Download failed:", resp$destfile))
-  }
+  # if (!any(fs::file_exists(resp$destfile))) {
+  #   cli::cli_abort(c(
+  #     "Download failed:",
+  #     resp$destfile[!fs::file_exists(resp$destfile)]
+  #   ))
+  # }
 
   zips <- resp$destfile
   if (isFALSE(extract)) {
