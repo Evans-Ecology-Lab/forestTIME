@@ -101,5 +101,5 @@ estimate_carbon <- function(data_prepped) {
     )
 
   #return
-  left_join(data_prepped, fiadb2, by = join_by(plot_ID, tree_ID, YEAR))
+  dplyr::left_join(data_prepped, fiadb2, by = dplyr::join_by(plot_ID, tree_ID, YEAR))
 }
