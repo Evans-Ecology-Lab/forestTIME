@@ -86,6 +86,11 @@ fia_download <- function(
   # TODO: check response for issues, retries, whatever
   # https://github.com/mekevans/forestTIME-builder/issues/91
 
+  
+  if (!fs::file_exists(resp$destfile)) {
+    cli::cli_abort("Download failed:", resp$destfile)
+  }
+
   zips <- resp$destfile
   if (isFALSE(extract)) {
     return(zips)
