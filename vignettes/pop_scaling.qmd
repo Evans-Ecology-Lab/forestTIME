@@ -69,7 +69,23 @@ mean(agc_rfia_ti$carbon_ton_acre)
 :::
 
 ```{r}
+#| label: annualize-data-internal
+#| echo: false
+
+state <- "RI"
+db <- fia_load(
+    "RI",
+    dir = system.file("exdata", package = "forestTIME.builder")
+  )
+data <- fia_tidy(db) #single tibble
+data_midpt <- data |>
+  fia_annualize(use_mortyr = FALSE) |>
+  fia_estimate()
+```
+
+```{r}
 #| label: annualize-data
+#| eval: false
 state <- "RI"
 
 # Data Download
@@ -108,20 +124,12 @@ data_midpt <-
 ## Expansion factors
 
 The FIA data provides users with expansion factors, `EXPNS`, to aid in scaling estimates up to state levels.
-There are two issues in using these provided `EXPNS` with our annualized data: 1) it is not straightforward to join the tables in to get the `EXPNS` column, and 2) there are now many more plots in each year, so the `EXPNS` column is no longer accurate (it is the acres of the entire state represented by each plot).
-
-Let's calculate our own expansion factor using the total area of RI.
-
-According to this [USDA tool](https://experience.arcgis.com/experience/ddb54b68e915431182d406f9778694cb/page/Land-Resources-Dashboard), the total area of RI is 781,730.1 acres.
+There are two issues in using these provided `EXPNS` with our annualized data: 1) it is not straightforward to join the tables in to get the `EXPNS` column, and 2) there are now many more plots in each year, so the `EXPNS` column is no longer accurate (it is the acres of the entire state represented by each plot). 
+Therefore, `fia_annualize()` re-calculates the `EXPNS` column as the total land area of the state divided by the number of plots in the interpolated data for that state in each year.  
+We think these `EXPNS` values can be used much in the same way as the ones in the "raw" FIA database.
 
 ```{r}
 #| label: expns
-data_midpt <- data_midpt |>
-  group_by(YEAR) |>
-  mutate(
-    EXPNS = 781730.1 / length(unique(plot_ID))
-  )
-
 data_midpt |>
   select(YEAR, EXPNS) |>
   group_by(YEAR) |>
@@ -130,10 +138,10 @@ data_midpt |>
   geom_line()
 ```
 
-You'll notice that our calculated `EXPNS` follow a "U" shape rather than being constant.
+You'll notice that the calculated `EXPNS` follow a "U" shape rather than being constant.
 That is because in our interpolated data, there are fewer plots in the beginning and end of the timeseries because we do not extrapolate beyond a panel's first and last inventory.
 
-Now that we have expansion factors, we can follow the methods in the [FIA demystified vignette](https://doserlab.com/files/rfia/articles/fiademystified#without-sampling-errors).
+Using these expansion factors, we can follow the methods in the [FIA demystified vignette](https://doserlab.com/files/rfia/articles/fiademystified#without-sampling-errors).
 
 ```{r}
 #| label: estimators
