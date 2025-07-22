@@ -51,7 +51,10 @@ interpolate_data <- function(data_expanded) {
   )
 
   data_interpolated <- data_expanded |>
-    dplyr::group_by(plot_ID, tree_ID) |>
+    # CONDID added as a grouping variable because rows with NA for tree_ID, but
+    # two different conditions were being treated as the same tree and erroring
+    # in approx(). E.g. approx(x = c(2006,2006), y = c(0,0), xout = c(2006,2006))
+    dplyr::group_by(plot_ID, tree_ID, CONDID) |> 
     dplyr::mutate(
       #linearly interpolate/extrapolate
       dplyr::across(
