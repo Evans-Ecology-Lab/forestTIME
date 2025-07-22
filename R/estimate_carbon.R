@@ -16,6 +16,8 @@ estimate_carbon <- function(data_prepped) {
     data_prepped |>
     # Can't estimate carbon for trees with missing heights or woodland species woodland species
     dplyr::filter(JENKINS_SPGRPCD < 10, !is.na(HT)) |>
+    # Can't estimate carbon for empty plots
+    dplyr::filter(!is.na(tree_ID) | !stringr::str_starts(tree_ID, "NA_")) |> 
     dplyr::left_join(
       med_cr_prop |> dplyr::select(PROVINCE = Province, SFTWD_HRDWD, CRmn),
       by = dplyr::join_by(SFTWD_HRDWD, PROVINCE)
