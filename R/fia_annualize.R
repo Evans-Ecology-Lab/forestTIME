@@ -82,10 +82,6 @@ fia_annualize <- function(data_tidy, use_mortyr = TRUE) {
         extrapolate = FALSE
       )
     )
-  # cond_interpolated is missing some CONDIDs because they apparently aren't all
-  # there in the tidied data.  I thought I had fixed that and kept any rows with
-  # no trees, but maybe I just kept *plots* with no trees and not plot * CONDID
-  # combinations.
 
   data_interpolated <- data_tidy |>
     expand_data() |>
