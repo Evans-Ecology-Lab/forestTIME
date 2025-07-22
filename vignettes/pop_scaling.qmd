@@ -32,6 +32,12 @@ How can we use the interpolated data produced by `forestTIME.builder` to get pop
 I'll use RI as an example state because it is small.
 We'll use the standard basic workflow to get estimated aboveground carbon for each tree in each year.
 
+::: callout-warning
+
+The interpolated values produced by `forestTIME.builder` are *inferences* and not samples, so it may not be appropriate to use (modified) design-based estimators, as we do in this vignette, which treat the data, including interpolated values, as a probablity sample.
+
+:::
+
 ::: callout-important
 `rFIA` produces estimates of carbon from 33 -- 40.7 tons/acre using design-based estimators.
 "Correct" estimates should be in this ballpark.
@@ -165,8 +171,8 @@ area_totals <- data_midpt |>
 agc_pop <- inner_join(tree_totals, area_totals) |> 
   group_by(YEAR) |> 
   summarize(
-    CARB_AG_TOTAL = sum(carbPlot, na.rm = TRUE), #
-    AREA_TOTAL = sum(forArea, na.rm = TRUE) #
+    CARB_AG_TOTAL = sum(carbPlot, na.rm = TRUE), # tons/plot
+    AREA_TOTAL = sum(forArea, na.rm = TRUE) # acres/plot
   ) |>
   # the units work out to still be tons(live carbon)/acre(forested land) even if the variable names are misleading
   mutate(method = "forestTIME", carbon_ton_acre = CARB_AG_TOTAL / AREA_TOTAL) |>
