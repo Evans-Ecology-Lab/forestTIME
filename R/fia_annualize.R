@@ -28,85 +28,9 @@
 #' @export
 fia_annualize <- function(data_tidy, use_mortyr = TRUE) {
   
-  # TODO: you *need* to move this into interpolate_data() so the step-wise
-  # workflow still works
-
-  # Interpolate COND table separately to account for the number of conditions
-  # (CONDIDs) changing from year to year
-  # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64
-
-  cond <- data_tidy |>
-    dplyr::group_by(plot_ID, INVYR, CONDID) |>
-    dplyr::filter(!is.na(CONDID)) |>
-    dplyr::summarize(
-      CONDPROP_UNADJ = dplyr::first(CONDPROP_UNADJ), #they *should* all be the same
-      .groups = "drop"
-    )
-
-  all_conds <- cond |>
-    dplyr::group_by(plot_ID) |>
-    tidyr::expand(
-      CONDID = unique(CONDID),
-      INVYR = unique(INVYR)
-    )
-
-  cond_complete <- dplyr::full_join(cond, all_conds) |>
-    dplyr::mutate(
-      CONDPROP_UNADJ = dplyr::if_else(
-        is.na(CONDPROP_UNADJ) & !is.na(CONDID),
-        0,
-        CONDPROP_UNADJ
-      )
-    )
-
-  cond_all_years <-
-    cond_complete |>
-    dplyr::group_by(plot_ID) |>
-    tidyr::expand(CONDID, YEAR = tidyr::full_seq(INVYR, 1))
-
-  cond_expanded <- dplyr::right_join(
-    cond_complete,
-    cond_all_years,
-    by = dplyr::join_by(plot_ID, CONDID, INVYR == YEAR)
-  ) |>
-    dplyr::arrange(plot_ID, INVYR, CONDID)
-
-  cond_interpolated <-
-    cond_expanded |>
-    dplyr::rename(YEAR = INVYR) |>
-    dplyr::group_by(plot_ID, CONDID) |>
-    dplyr::mutate(
-      CONDPROP_UNADJ = inter_extra_polate(
-        YEAR,
-        CONDPROP_UNADJ,
-        extrapolate = FALSE
-      )
-    )
-
-  data_interpolated <- data_tidy |>
+data_tidy |>
     expand_data() |>
-    interpolate_data()
-
-  #full_join in the conditions to make sure every year has every condition, even
-  #if there are no trees in that condition
-  out <- dplyr::full_join(
-    data_interpolated |> dplyr::select(-CONDPROP_UNADJ),
-    cond_interpolated,
-    by = dplyr::join_by(plot_ID, CONDID, YEAR)
-  ) |>
+    interpolate_data() |> 
     adjust_mortality(use_mortyr = use_mortyr)
-
-  #return
-  out
 }
-
-#test that cond props add to 1 within rounding error
-# out |> 
-#   group_by(plot_ID, YEAR, CONDID) |> 
-#   summarize(
-#     CONDPROP_UNADJ = mean(CONDPROP_UNADJ)
-#   ) |> 
-#   group_by(plot_ID, YEAR) |> 
-#   summarize(cond_sum = sum(CONDPROP_UNADJ)) |>
-#   filter(!near(cond_sum, 1))
 
