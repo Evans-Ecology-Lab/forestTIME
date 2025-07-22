@@ -111,7 +111,7 @@ data_midpt <- data |>
   fia_estimate()
 ```
 
-I'll add domain indicator columns as are done in the `rFIA` demystified vignette so we calculate carbon in live trees per area of forested land using base intensity plots only.
+I'll add domain indicator columns as is done in the `rFIA` demystified vignette so we calculate carbon in live trees per area of forested land using base intensity plots only.
 Reason:
 
 > We build separate domain indicators for estimating tree totals and area totals, because we can specify different domains of interest for both.
