@@ -61,14 +61,6 @@ interpolate_data <- function(data_expanded) {
       #interpolate to switch at midpoint
       dplyr::across(dplyr::any_of(cols_midpt_switch), step_interp)
     ) |>
-    # switch tree_ID back to NA if it was just a placeholder for an empty condition
-    dplyr::mutate(
-      tree_ID = dplyr::if_else(
-        stringr::str_starts(tree_ID, "NA_"),
-        NA_character_,
-        tree_ID
-      )
-    ) |> 
     # convert 999 back to NA for some vars
     dplyr::mutate(dplyr::across(
       dplyr::any_of(cols_midpt_switch),
@@ -100,8 +92,8 @@ interpolate_data <- function(data_expanded) {
       JENKINS_SPGRPCD
     )
 
-  data_interpolated <- data_interpolated |>
-    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |>
+  data_adjusted <- data_interpolated |>
+    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |> 
     # TODO: Is there a way of only having to do the case_when once?  E.g. would
     # it be faster to create a column "dead_fallen" and then in a subsequent
     # step use dead_fallen to set STATUSCD and STANDING_DEAD_CD? this function
@@ -117,15 +109,16 @@ interpolate_data <- function(data_expanded) {
         JENKINS_SPGRPCD == 10 & (DIA < 1 | HT < 1 | ACTUALHT < 1) ~ 0,
         .default = STANDING_DEAD_CD
       )
-    ) |>
+    ) |> 
     dplyr::select(-JENKINS_SPGRPCD)
 
   # merge in land areas and calculate EXPNS
-  data_interpolated |>
+  data_adjusted |>
     dplyr::mutate(
       #get STATECD out of plot_ID
-      STATECD = as.numeric(stringr::str_extract(plot_ID, "\\d+(?=_)"))
-    ) |>
+      STATECD = as.numeric(stringr::str_extract(plot_ID, "\\d+(?=_)")),
+      # .before = plot_ID
+    ) |> 
     dplyr::left_join(
       state_areas |> dplyr::select(STATECD, state_land_area),
       by = dplyr::join_by(STATECD)
@@ -133,7 +126,7 @@ interpolate_data <- function(data_expanded) {
     dplyr::group_by(YEAR, STATECD) |>
     dplyr::mutate(
       EXPNS = state_land_area / length(unique(plot_ID))
-    ) |>
+    ) |> 
     dplyr::ungroup() |>
     dplyr::select(-STATECD, -state_land_area) |> 
     dplyr::arrange(plot_ID, tree_ID, YEAR, CONDID)
