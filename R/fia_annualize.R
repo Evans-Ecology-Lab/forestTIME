@@ -73,8 +73,8 @@ fia_annualize <- function(data_tidy, use_mortyr = TRUE) {
 
   cond_interpolated <-
     cond_expanded |>
-    rename(YEAR = INVYR) |>
-    group_by(plot_ID, CONDID) |>
+    dplyr::rename(YEAR = INVYR) |>
+    dplyr::group_by(plot_ID, CONDID) |>
     dplyr::mutate(
       CONDPROP_UNADJ = inter_extra_polate(
         YEAR,
@@ -87,12 +87,26 @@ fia_annualize <- function(data_tidy, use_mortyr = TRUE) {
     expand_data() |>
     interpolate_data()
 
-  dplyr::left_join(
-    data_interpolated |> select(-CONDPROP_UNADJ),
+  #full_join in the conditions to make sure every year has every condition, even
+  #if there are no trees in that condition
+  out <- dplyr::full_join(
+    data_interpolated |> dplyr::select(-CONDPROP_UNADJ),
     cond_interpolated,
     by = dplyr::join_by(plot_ID, CONDID, YEAR)
   ) |>
     adjust_mortality(use_mortyr = use_mortyr)
 
+  #return
+  out
 }
+
+#test that cond props add to 1 within rounding error
+# out |> 
+#   group_by(plot_ID, YEAR, CONDID) |> 
+#   summarize(
+#     CONDPROP_UNADJ = mean(CONDPROP_UNADJ)
+#   ) |> 
+#   group_by(plot_ID, YEAR) |> 
+#   summarize(cond_sum = sum(CONDPROP_UNADJ)) |>
+#   filter(!near(cond_sum, 1))
 
