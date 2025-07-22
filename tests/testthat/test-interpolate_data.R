@@ -9,6 +9,9 @@ test_that("variables with NAs get interpolated correctly", {
     dplyr::select(
       plot_ID,
       tree_ID,
+      CONDID,
+      COND_STATUS_CD,
+      CONDPROP_UNADJ,
       SPCD,
       INVYR,
       DIA,
@@ -41,6 +44,9 @@ test_that("interpolation flags negative numbers as fallen dead", {
     dplyr::select(
       plot_ID,
       tree_ID,
+      CONDID,
+      COND_STATUS_CD,
+      CONDPROP_UNADJ,
       SPCD,
       INVYR,
       DIA,
@@ -97,5 +103,29 @@ test_that("interpolation of CULL is correct", {
   expect_false(
     identical(cull_vals, c(0, 1))
   )
-  
+})
+
+
+test_that("CONDPROP_UNADJ sums to ~1", {
+  data <- fia_load(
+    "RI",
+    dir = system.file("exdata", package = "forestTIME.builder")
+  ) |>
+    fia_tidy() |>
+    dplyr::filter(INVYR %in% c(2009:2014))
+
+  data_interpolated <- data |>
+    expand_data() |>
+    interpolate_data()
+
+  #test that cond props add to 1 within rounding error
+  cond_sums <- data_interpolated |>
+    group_by(plot_ID, YEAR, CONDID) |>
+    summarize(
+      CONDPROP_UNADJ = mean(CONDPROP_UNADJ)
+    ) |>
+    group_by(plot_ID, YEAR) |>
+    summarize(cond_sum = sum(CONDPROP_UNADJ)) |>
+    pull(cond_sum)
+  expect_equal(cond_sums, rep(1, length(cond_sums)))
 })
