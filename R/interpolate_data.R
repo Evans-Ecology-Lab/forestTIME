@@ -51,10 +51,7 @@ interpolate_data <- function(data_expanded) {
   )
 
   data_interpolated <- data_expanded |>
-    # CONDID added as a grouping variable because rows with NA for tree_ID, but
-    # two different conditions were being treated as the same tree and erroring
-    # in approx(). E.g. approx(x = c(2006,2006), y = c(0,0), xout = c(2006,2006))
-    dplyr::group_by(plot_ID, tree_ID, CONDID) |> 
+    dplyr::group_by(plot_ID, tree_ID) |>
     dplyr::mutate(
       #linearly interpolate/extrapolate
       dplyr::across(
@@ -64,6 +61,14 @@ interpolate_data <- function(data_expanded) {
       #interpolate to switch at midpoint
       dplyr::across(dplyr::any_of(cols_midpt_switch), step_interp)
     ) |>
+    # switch tree_ID back to NA if it was just a placeholder for an empty condition
+    dplyr::mutate(
+      tree_ID = dplyr::if_else(
+        stringr::str_starts(tree_ID, "NA_"),
+        NA_character_,
+        tree_ID
+      )
+    ) |> 
     # convert 999 back to NA for some vars
     dplyr::mutate(dplyr::across(
       dplyr::any_of(cols_midpt_switch),
@@ -130,5 +135,6 @@ interpolate_data <- function(data_expanded) {
       EXPNS = state_land_area / length(unique(plot_ID))
     ) |>
     dplyr::ungroup() |>
-    dplyr::select(-STATECD, -state_land_area)
+    dplyr::select(-STATECD, -state_land_area) |> 
+    dplyr::arrange(plot_ID, tree_ID, YEAR, CONDID)
 }
