@@ -1,5 +1,6 @@
 # forestTIME.builder (development version)
 
+- Fixed a bug in interpolation of `CONDPROP_UNAJ`.  Now the workflow retains all "empty" conditions (i.e. `CONDID`s with no trees in them) and properly interpolates `CONDPROP_UNADJ` so the proportion for all conditions in a plot in a year sum to 1 (within rounding error) ([#64](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64)).
 - `fia_annualize()` now adds and `EXPNS` column calculated as the total land area of the state in acres divided by the number of plots in the interpolated data.  It *should* be usable in the same ways the `EXPNS` column in the "raw" FIA data can be used.
 - Renames the `state_codes` dataset to `state_areas` and adds a column for state land area in acres.
 
