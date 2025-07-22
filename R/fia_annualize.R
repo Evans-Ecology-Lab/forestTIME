@@ -87,7 +87,11 @@ fia_annualize <- function(data_tidy, use_mortyr = TRUE) {
     expand_data() |>
     interpolate_data()
 
-  left_join(data_interpolated |> select(-CONDPROP_UNADJ), cond_interpolated) |>
+  dplyr::left_join(
+    data_interpolated |> select(-CONDPROP_UNADJ),
+    cond_interpolated,
+    by = dplyr::join_by(plot_ID, CONDID, YEAR)
+  ) |>
     adjust_mortality(use_mortyr = use_mortyr)
 
 }
