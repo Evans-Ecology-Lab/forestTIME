@@ -70,6 +70,9 @@ interpolate_data <- function(data_expanded) {
       .groups = "drop"
     )
 
+  # Make it so each plot has every CONDID in every year and if the CONDID wasn't
+  # in the original data, just set CONDPROP_UNADJ to 0.  This is all so linear
+  # interpolation works correctly
   all_conds <- cond |>
     dplyr::group_by(plot_ID) |>
     tidyr::expand(
@@ -95,6 +98,9 @@ interpolate_data <- function(data_expanded) {
     dplyr::group_by(plot_ID) |>
     tidyr::expand(CONDID, YEAR = tidyr::full_seq(YEAR, 1))
 
+  # Expand and interpolate the COND table to get CONDPROP_UNADJ values that sum
+  # to 1 for each plot in a given year.
+
   cond_expanded <- dplyr::right_join(
     cond_complete,
     cond_all_years,
@@ -115,7 +121,7 @@ interpolate_data <- function(data_expanded) {
     )
 
 
-  #interpolate the data
+  # interpolate the data
   data_interpolated <- data_expanded |>
     dplyr::group_by(plot_ID, tree_ID) |>
     dplyr::mutate(
