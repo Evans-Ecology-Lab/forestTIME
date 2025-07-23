@@ -22,13 +22,13 @@ fia_tidy <- function(db) {
   PLOTGEOM <-
     db$PLOTGEOM |>
     dplyr::filter(INVYR >= 2000L) |>
-    dplyr::mutate(CN = as.character(CN)) |> 
+    dplyr::mutate(CN = as.character(CN)) |>
     dplyr::select(PLT_CN = CN, INVYR, ECOSUBCD)
 
   PLOT <-
     db$PLOT |>
     dplyr::filter(INVYR >= 2000L) |>
-    dplyr::mutate(CN = as.character(CN)) |> 
+    dplyr::mutate(CN = as.character(CN)) |>
     fia_add_composite_ids() |>
     dplyr::select(
       plot_ID,
@@ -42,7 +42,7 @@ fia_tidy <- function(db) {
   COND <-
     db$COND |>
     dplyr::filter(INVYR >= 2000L) |>
-    dplyr::mutate(PLT_CN = as.character(PLT_CN)) |> 
+    dplyr::mutate(PLT_CN = as.character(PLT_CN)) |>
     fia_add_composite_ids() |>
     dplyr::select(
       plot_ID,
@@ -58,7 +58,7 @@ fia_tidy <- function(db) {
   TREE <-
     db$TREE |>
     dplyr::filter(INVYR >= 2000L) |>
-    dplyr::mutate(PLT_CN = as.character(PLT_CN)) |> 
+    dplyr::mutate(PLT_CN = as.character(PLT_CN)) |>
     fia_add_composite_ids() |>
     dplyr::select(
       plot_ID,
@@ -81,14 +81,13 @@ fia_tidy <- function(db) {
 
   # Join the tables
   data <-
-    PLOT |>
+    COND |>
     dplyr::as_tibble() |>
-    dplyr::left_join(TREE, by = dplyr::join_by(plot_ID, PLT_CN, INVYR)) |>
-    dplyr::left_join(PLOTGEOM, by = dplyr::join_by(INVYR, PLT_CN)) |>
-    dplyr::left_join(COND, by = dplyr::join_by(plot_ID, INVYR, PLT_CN, CONDID))
+    dplyr::left_join(TREE, by = dplyr::join_by(plot_ID, PLT_CN, CONDID, INVYR)) |>
+    dplyr::left_join(PLOT, by = dplyr::join_by(plot_ID, PLT_CN, INVYR)) |> 
+    dplyr::left_join(PLOTGEOM, by = dplyr::join_by(INVYR, PLT_CN))
 
-
-  # use only base intensity plots 
+  # use only base intensity plots
   # data <- data |>
   #   dplyr::filter(INTENSITY == 1)
 
@@ -113,29 +112,29 @@ fia_tidy <- function(db) {
     dplyr::mutate(ACTUALHT = dplyr::coalesce(ACTUALHT, HT))
 
   #   # deal with "problem" trees
-    # data <- data |>
-    #   dplyr::group_by(tree_ID) |>
-    #   dplyr::filter(
-    #     sum(!is.na(DIA)) > 1 & sum(!is.na(HT)) > 1
-    #   ) |>
-    #   # remove trees that have always been fallen and have no measurements
-    #   dplyr::filter(
-    #     !(sum(is.finite(DIA) & is.finite(HT)) == 0 & all(STANDING_DEAD_CD == 0))
-    #   ) |>
-    #   # remove trees that were measured in error
-    #   # (https://github.com/mekevans/forestTIME-builder/issues/59#issuecomment-2758575994)
-    #   dplyr::filter(!any(RECONCILECD %in% c(7, 8))) |>
-    #   dplyr::ungroup() |>
+  # data <- data |>
+  #   dplyr::group_by(tree_ID) |>
+  #   dplyr::filter(
+  #     sum(!is.na(DIA)) > 1 & sum(!is.na(HT)) > 1
+  #   ) |>
+  #   # remove trees that have always been fallen and have no measurements
+  #   dplyr::filter(
+  #     !(sum(is.finite(DIA) & is.finite(HT)) == 0 & all(STANDING_DEAD_CD == 0))
+  #   ) |>
+  #   # remove trees that were measured in error
+  #   # (https://github.com/mekevans/forestTIME-builder/issues/59#issuecomment-2758575994)
+  #   dplyr::filter(!any(RECONCILECD %in% c(7, 8))) |>
+  #   dplyr::ungroup() |>
 
-    # join the empty plots back in
-    data <-
-      dplyr::full_join(
-        data,
-        all_plots,
-        by = dplyr::join_by(plot_ID, PLT_CN, INVYR, DESIGNCD, INTENSITY)
-      ) |>
-      dplyr::arrange(plot_ID, tree_ID, INVYR) |>
-      dplyr::select(plot_ID, tree_ID, INVYR, everything())
+  # join the empty plots back in
+  data <-
+    dplyr::full_join(
+      data,
+      all_plots,
+      by = dplyr::join_by(plot_ID, PLT_CN, INVYR, DESIGNCD, INTENSITY)
+    ) |>
+    dplyr::arrange(plot_ID, tree_ID, INVYR) |>
+    dplyr::select(plot_ID, tree_ID, INVYR, everything())
 
   # return:
   data

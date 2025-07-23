@@ -32,11 +32,18 @@ expand_data <- function(data) {
         "CONDID",
         "COND_STATUS_CD"
       )),
-      \(x) dplyr::if_else(is.na(x), 999, x)
+      \(x) dplyr::if_else(is.na(x) & !is.na(tree_ID), 999, x)
     )) |> 
     # replace NAs for CULL with 0s so they interpolate correctly
     # (https://github.com/mekevans/forestTIME-builder/issues/77)
-    dplyr::mutate(CULL = dplyr::if_else(is.na(CULL), 0, CULL))
+    dplyr::mutate(CULL = dplyr::if_else(is.na(CULL) & !is.na(tree_ID), 0, CULL)) |> 
+    # Some rows are all NAs just to keep all CONDID x plot_ID combinations in
+    # the data, but they interfere with interpolation because all tree_IDs of NA
+    # get treated like the same tree. So we make them unique per CONDID and
+    # later they get changed back to NA in interpolate_data()
+    dplyr::mutate(
+      tree_ID = dplyr::if_else(is.na(tree_ID), paste0("NA_", CONDID), tree_ID)
+    )
 
   all_yrs <-
     data |>

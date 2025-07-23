@@ -44,6 +44,7 @@ The interpolated values produced by `forestTIME.builder` are *inferences* and no
 
 ```{r}
 #| label: rfia-biomass
+
 agc_rfia_annual <-
   biomass(
     fiaRI,
@@ -72,6 +73,7 @@ agc_rfia_ti <-
 mean(agc_rfia_annual$carbon_ton_acre)
 mean(agc_rfia_ti$carbon_ton_acre)
 ```
+
 :::
 
 ```{r}
@@ -80,9 +82,9 @@ mean(agc_rfia_ti$carbon_ton_acre)
 
 state <- "RI"
 db <- fia_load(
-    "RI",
-    dir = system.file("exdata", package = "forestTIME.builder")
-  )
+  "RI",
+  dir = system.file("exdata", package = "forestTIME.builder")
+)
 data <- fia_tidy(db) #single tibble
 data_midpt <- data |>
   fia_annualize(use_mortyr = FALSE) |>
@@ -92,6 +94,7 @@ data_midpt <- data |>
 ```{r}
 #| label: annualize-data
 #| eval: false
+
 state <- "RI"
 
 # Data Download
@@ -108,7 +111,7 @@ data_midpt <- data |>
   fia_estimate()
 ```
 
-I'll add domain indicator columns as are done in the `rFIA` demystified vignette so we calculate carbon in live trees per area of forested land using base intensity plots only.
+I'll add domain indicator columns as is done in the `rFIA` demystified vignette so we calculate carbon in live trees per area of forested land using base intensity plots only.
 Reason:
 
 > We build separate domain indicators for estimating tree totals and area totals, because we can specify different domains of interest for both.
@@ -119,6 +122,7 @@ So we can't just `filter(STATUSCD == 1 & COND_STATUSCD == 1)` to estimate carbon
 
 ```{r}
 #| label: domain-indicators
+
 data_midpt <-
   data_midpt |>
   mutate(
@@ -136,6 +140,7 @@ We think these `EXPNS` values can be used much in the same way as the ones in th
 
 ```{r}
 #| label: expns
+
 data_midpt |>
   select(YEAR, EXPNS) |>
   group_by(YEAR) |>
@@ -168,22 +173,28 @@ area_totals <- data_midpt |>
     forArea = sum(CONDPROP_UNADJ * EXPNS * aDI, na.rm = TRUE) #acres/plot
   )
 
-agc_pop <- inner_join(tree_totals, area_totals) |> 
-  group_by(YEAR) |> 
+agc_pop <- inner_join(tree_totals, area_totals) |>
+  group_by(YEAR) |>
   summarize(
     CARB_AG_TOTAL = sum(carbPlot, na.rm = TRUE), # tons/plot
     AREA_TOTAL = sum(forArea, na.rm = TRUE) # acres/plot
   ) |>
   # the units work out to still be tons(live carbon)/acre(forested land) even if the variable names are misleading
   mutate(method = "forestTIME", carbon_ton_acre = CARB_AG_TOTAL / AREA_TOTAL) |>
-  select(method, YEAR, carbon_ton_acre, carbon_total = CARB_AG_TOTAL, AREA_TOTAL)
+  select(
+    method,
+    YEAR,
+    carbon_ton_acre,
+    carbon_total = CARB_AG_TOTAL,
+    AREA_TOTAL
+  )
 agc_pop
 ```
 
 ```{r}
 #| label: plot-results
 
-all <- bind_rows(agc_rfia_annual, agc_rfia_ti, agc_pop) 
+all <- bind_rows(agc_rfia_annual, agc_rfia_ti, agc_pop)
 
 ggplot(all, aes(x = YEAR, y = carbon_total, color = method)) +
   geom_line() +

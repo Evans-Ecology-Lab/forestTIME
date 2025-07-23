@@ -37,7 +37,14 @@
 interpolate_data <- function(data_expanded) {
   cli::cli_progress_step("Interpolating between surveys")
   #variables to linearly interpolate/extrapolate
-  cols_interpolate <- c("ACTUALHT", "DIA", "HT", "CULL", "CR", "CONDPROP_UNADJ")
+  cols_interpolate <- c(
+    "ACTUALHT",
+    "DIA",
+    "HT",
+    "CULL",
+    "CR"#,
+    #  "CONDPROP_UNADJ" #this gets interpolated separately
+  )
   #variables that switch at the midpoint (rounded down) between surveys
   cols_midpt_switch <- c(
     "PLT_CN", #used to join to POP tables.  Possibly a better way...
@@ -50,6 +57,71 @@ interpolate_data <- function(data_expanded) {
     "COND_STATUS_CD"
   )
 
+
+  # Interpolate COND table separately to account for the number of conditions
+  # (CONDIDs) changing from year to year
+  # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64
+  cond <- data_expanded |>
+    dplyr::filter(interpolated == FALSE) |> 
+    dplyr::group_by(plot_ID, YEAR, CONDID, COND_STATUS_CD) |>
+    dplyr::filter(!is.na(CONDID)) |>
+    dplyr::summarize(
+      CONDPROP_UNADJ = dplyr::first(CONDPROP_UNADJ), #they *should* all be the same
+      .groups = "drop"
+    )
+
+  # Make it so each plot has every CONDID in every year and if the CONDID wasn't
+  # in the original data, just set CONDPROP_UNADJ to 0.  This is all so linear
+  # interpolation works correctly
+  all_conds <- cond |>
+    dplyr::group_by(plot_ID) |>
+    tidyr::expand(
+      CONDID = unique(CONDID),
+      YEAR = unique(YEAR)
+    )
+
+  cond_complete <- dplyr::full_join(
+    cond,
+    all_conds,
+    by = dplyr::join_by(plot_ID, YEAR, CONDID)
+  ) |>
+    dplyr::mutate(
+      CONDPROP_UNADJ = dplyr::if_else(
+        is.na(CONDPROP_UNADJ) & !is.na(CONDID),
+        0,
+        CONDPROP_UNADJ
+      )
+    )
+
+  cond_all_years <-
+    cond_complete |>
+    dplyr::group_by(plot_ID) |>
+    tidyr::expand(CONDID, YEAR = tidyr::full_seq(YEAR, 1))
+
+  # Expand and interpolate the COND table to get CONDPROP_UNADJ values that sum
+  # to 1 for each plot in a given year.
+
+  cond_expanded <- dplyr::right_join(
+    cond_complete,
+    cond_all_years,
+    by = dplyr::join_by(plot_ID, CONDID, YEAR)
+  ) |>
+    dplyr::arrange(plot_ID, YEAR, CONDID)
+
+  cond_interpolated <-
+    cond_expanded |>
+    dplyr::group_by(plot_ID, CONDID) |>
+    dplyr::mutate(
+      CONDPROP_UNADJ = inter_extra_polate(
+        YEAR,
+        CONDPROP_UNADJ,
+        extrapolate = FALSE
+      ),
+      COND_STATUS_CD = step_interp(COND_STATUS_CD)
+    )
+
+
+  # interpolate the data
   data_interpolated <- data_expanded |>
     dplyr::group_by(plot_ID, tree_ID) |>
     dplyr::mutate(
@@ -92,8 +164,8 @@ interpolate_data <- function(data_expanded) {
       JENKINS_SPGRPCD
     )
 
-  data_interpolated <- data_interpolated |>
-    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |>
+  data_adjusted <- data_interpolated |>
+    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |> 
     # TODO: Is there a way of only having to do the case_when once?  E.g. would
     # it be faster to create a column "dead_fallen" and then in a subsequent
     # step use dead_fallen to set STATUSCD and STANDING_DEAD_CD? this function
@@ -109,15 +181,23 @@ interpolate_data <- function(data_expanded) {
         JENKINS_SPGRPCD == 10 & (DIA < 1 | HT < 1 | ACTUALHT < 1) ~ 0,
         .default = STANDING_DEAD_CD
       )
-    ) |>
+    ) |> 
     dplyr::select(-JENKINS_SPGRPCD)
 
+  # merge the interpolated COND values back in
+  data_adjusted_cond <- dplyr::full_join(
+    data_adjusted |> dplyr::select(-CONDPROP_UNADJ, -COND_STATUS_CD),
+    cond_interpolated,
+    by = dplyr::join_by(plot_ID, CONDID, YEAR)
+  )
+
   # merge in land areas and calculate EXPNS
-  data_interpolated |>
+  out <- data_adjusted_cond |>
     dplyr::mutate(
       #get STATECD out of plot_ID
-      STATECD = as.numeric(stringr::str_extract(plot_ID, "\\d+(?=_)"))
-    ) |>
+      STATECD = as.numeric(stringr::str_extract(plot_ID, "\\d+(?=_)")),
+      # .before = plot_ID
+    ) |> 
     dplyr::left_join(
       state_areas |> dplyr::select(STATECD, state_land_area),
       by = dplyr::join_by(STATECD)
@@ -125,7 +205,15 @@ interpolate_data <- function(data_expanded) {
     dplyr::group_by(YEAR, STATECD) |>
     dplyr::mutate(
       EXPNS = state_land_area / length(unique(plot_ID))
-    ) |>
+    ) |> 
     dplyr::ungroup() |>
-    dplyr::select(-STATECD, -state_land_area)
+    dplyr::select(-STATECD, -state_land_area) |> 
+    # Switch tree_ID for empty conditions back to NA
+    dplyr::mutate(
+      tree_ID = dplyr::if_else(stringr::str_starts(tree_ID, "NA_"), NA, tree_ID)
+    ) |> 
+    dplyr::arrange(plot_ID, tree_ID, YEAR, CONDID)
+
+  # return:
+  out
 }

@@ -59,7 +59,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
       ) |>
       # this "fills in" the new effective MORTYR for all rows since the above
       # if_else() only increments it for the inventory year row
-      mutate(MORTYR_eff = max(MORTYR_eff)) |>
+      dplyr::mutate(MORTYR_eff = max(MORTYR_eff)) |>
       dplyr::mutate(
         # STATUSCD is interpolated to the midpoint between surveys
         # see utils.R for more info on what %|||% does
