@@ -45,7 +45,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
     # If a tree is marked as alive (STATUSCD 1) in the recorded MORTYR (i.e.
     # MORTYR is an inventory year), then assume death happened the year after
     # that inventory year
-    # (https://github.com/mekevans/forestTIME-builder/issues/61)
+    # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/61)
 
     df <- data_interpolated |>
       dplyr::group_by(tree_ID) |>
@@ -112,7 +112,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
       )
     ) |>
     # trees in non-sampled areas shoudn't have measurements for anything
-    # https://github.com/mekevans/forestTIME-builder/issues/59
+    # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/59
     dplyr::mutate(
       dplyr::across(
         c(DIA, HT, ACTUALHT, CULL, CR),

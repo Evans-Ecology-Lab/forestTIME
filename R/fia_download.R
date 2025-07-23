@@ -80,12 +80,12 @@ fia_download <- function(
     resume = TRUE,
     progress = TRUE,
     multiplex = TRUE,
-    useragent = "forestTIME-builder (https://github.com/mekevans/forestTIME-builder)"
+    useragent = "forestTIME-builder (https://github.com/Evans-Ecology-Lab/forestTIME-builder)"
   )
 
   # TODO: Don't error if download fails, instead check response for issues and
   # retry.  Then warn if only some downloads failed.
-  # https://github.com/mekevans/forestTIME-builder/issues/91
+  # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/91
 
   # if (!any(fs::file_exists(resp$destfile))) {
   #   cli::cli_abort(c(
