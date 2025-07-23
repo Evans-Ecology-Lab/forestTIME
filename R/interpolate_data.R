@@ -213,4 +213,7 @@ interpolate_data <- function(data_expanded) {
       tree_ID = dplyr::if_else(stringr::str_starts(tree_ID, "NA_"), NA, tree_ID)
     ) |> 
     dplyr::arrange(plot_ID, tree_ID, YEAR, CONDID)
+
+  # return:
+  out
 }
