@@ -38,3 +38,5 @@ inst/doc
 docs/.posit/publish/Investigating dropped trees-OEJ2.toml
 docs/.posit/publish/deployments/deployment-E1MC.toml
 
+docs/imputation_alternatives_files/
+docs/imputation_alternatives.html
