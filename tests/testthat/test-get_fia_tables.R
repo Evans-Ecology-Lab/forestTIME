@@ -1,4 +1,6 @@
 test_that("fia_download() works", {
+  skip_on_cran()
+  
   path <- withr::local_tempdir()
   fia_download(states = "RI", download_dir = path, keep_zip = TRUE)
   files <- fs::dir_ls(path)

@@ -6,6 +6,6 @@
 #' @export
 #' @returns a list of data frames
 fia_load <- function(states, dir = "fia") {
-  rFIA::readFIA(dir = dir, states = states, tables = tables) |>
+  rFIA::readFIA(dir = dir, states = states, tables = tables_ft) |>
     purrr::map(dplyr::as_tibble)
 }
