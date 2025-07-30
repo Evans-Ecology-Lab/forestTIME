@@ -201,4 +201,4 @@ ggplot(all, aes(x = YEAR, y = carbon_ton_acre, color = method)) +
 
 ```
 
-We have some ballbark similar estimates that are obviously very different in terms of temporal trend.
+We have some ballbark similar estimates to the ones `rFIA` produces.
