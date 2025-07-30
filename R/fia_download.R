@@ -43,12 +43,22 @@ tables_rfia <- c(
 #' @param states vector of state abbreviations; for all states use `state.abb`.
 #' @param download_dir where to save the zip files.
 #' @param extract which files to extract from the downloaded zip file—those
-#'   needed by `forestTIME`, those needed by `rFIA`, all the files, or none.
+#'   needed by `forestTIME.builder`, those needed by `rFIA` (which includes all
+#'   the tables `forestTIME.builder` needs), all the files, or none.
 #' @param keep_zip logical; keep the .zip file after CSVs are extracted?
 #' Defaults to `TRUE`.
 #'
 #' @export
 #' @returns returns nothing
+#' @examples
+#' \dontrun{
+#' # "Standard" download
+#' fia_download(states = c("RI", "DE"))
+#' 
+#' # Extract enough tables so it works with rFIA::readFIA() also
+#' fia_download(states = c("RI", "DE"), extract = "rFIA")
+#' }
+#' 
 fia_download <- function(
   states,
   download_dir = "fia",

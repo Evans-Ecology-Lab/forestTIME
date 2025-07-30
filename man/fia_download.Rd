@@ -17,7 +17,8 @@ fia_download(
 \item{download_dir}{where to save the zip files.}
 
 \item{extract}{which files to extract from the downloaded zip file—those
-needed by \code{forestTIME}, those needed by \code{rFIA}, all the files, or none.}
+needed by \code{forestTIME.builder}, those needed by \code{rFIA} (which includes all
+the tables \code{forestTIME.builder} needs), all the files, or none.}
 
 \item{keep_zip}{logical; keep the .zip file after CSVs are extracted?
 Defaults to \code{TRUE}.}
@@ -30,4 +31,14 @@ The zip files are smaller than just the *_TREE.csv, so this just downloads
 the whole zip and extracts the required CSV files. Uses
 \code{curl::multi_download()} which resumes and skips partial and incomplete
 downloads, respectively, when run subsequent times.
+}
+\examples{
+\dontrun{
+# "Standard" download
+fia_download(states = c("RI", "DE"))
+
+# Extract enough tables so it works with rFIA::readFIA() also
+fia_download(states = c("RI", "DE"), extract = "rFIA")
+}
+
 }
