@@ -4,23 +4,41 @@
 \alias{fia_download}
 \title{Download zip files from FIA datamart}
 \usage{
-fia_download(states, download_dir = "fia", extract = TRUE, keep_zip = FALSE)
+fia_download(
+  states,
+  download_dir = "fia",
+  extract = c("forestTIME", "rFIA", "all", "none"),
+  keep_zip = TRUE
+)
 }
 \arguments{
 \item{states}{vector of state abbreviations; for all states use \code{state.abb}.}
 
 \item{download_dir}{where to save the zip files.}
 
-\item{extract}{logical; extract the TREE and PLOT csv files?}
+\item{extract}{which files to extract from the downloaded zip file—those
+needed by \code{forestTIME.builder}, those needed by \code{rFIA} (which includes all
+the tables \code{forestTIME.builder} needs), all the files, or none.}
 
-\item{keep_zip}{logical; keep the .zip file after CSVs are extracted?}
+\item{keep_zip}{logical; keep the .zip file after CSVs are extracted?
+Defaults to \code{TRUE}.}
 }
 \value{
 returns nothing
 }
 \description{
 The zip files are smaller than just the *_TREE.csv, so this just downloads
-the whole zip and extracts the required CSV files (TREE, PLOT, and COND). Uses
+the whole zip and extracts the required CSV files. Uses
 \code{curl::multi_download()} which resumes and skips partial and incomplete
 downloads, respectively, when run subsequent times.
+}
+\examples{
+\dontrun{
+# "Standard" download
+fia_download(states = c("RI", "DE"))
+
+# Extract enough tables so it works with rFIA::readFIA() also
+fia_download(states = c("RI", "DE"), extract = "rFIA")
+}
+
 }

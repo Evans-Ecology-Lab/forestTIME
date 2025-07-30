@@ -1,0 +1,44 @@
+CN,INVYR,P3_OZONE_IND,STATECD,STATEAB,STATENM,RSCD,ANN_INVENTORY,NOTES,CREATED_DATE,MODIFIED_DATE,CYCLE,SUBCYCLE,PRJ_CN
+159475196010661,1997,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-06-16 09:15:06,2021-05-03 15:12:33,4,1,270781647732862
+159476167010661,1994,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-06-16 09:15:10,2021-05-03 15:12:33,1,1,270781647732862
+55942249010538,2003,N,44,RI,Rhode Island,24,Y,Cycle 5 subcycle 1 is not used in current estimates for years 2008 and after.,2005-09-08 07:56:09,2021-05-03 10:18:09,5,1,270781646732862
+62270579010538,2005,N,44,RI,Rhode Island,24,Y,Annual 43% 2003-2005 current area and volume; ,2006-03-31 12:38:42,2021-05-03 10:18:09,5,3,270781646732862
+55944589010538,2004,N,44,RI,Rhode Island,24,Y,Cycle 5 subcycle 2 is not used in current estimates for years 2008 and after.,2006-03-29 11:18:55,2021-05-03 10:18:09,5,2,270781646732862
+74338282010538,2006,N,44,RI,Rhode Island,24,Y,Annual 71% 2003-2006 current area and volume;  ,2007-08-09 08:14:10,2021-05-03 10:18:09,5,4,270781646732862
+120631312010661,2007,N,44,RI,Rhode Island,24,Y,Annual 100% 2003-2007 current area and volume;  1998 to 2003-2007 periodic to annual growth removals and mortality,2008-04-15 11:29:02,2021-05-03 10:18:09,5,5,270781646732862
+120044339010661,2008,N,44,RI,Rhode Island,24,Y,Annual 100% 2004-2008 current area and volume;  20% annual remeasurement complete; GRM estimates for 20% annual remeasurement.,2008-04-08 11:22:05,2021-05-03 10:18:09,6,1,270781646732862
+144953199010661,2009,N,44,RI,Rhode Island,24,Y,Annual 100% 2005-2009 current area and volume;  40% annual remeasurement complete; GRM estimates for 40% annual remeasurement.,2008-05-16 13:03:07,2021-05-03 10:18:09,6,2,270781646732862
+168855239010661,2010,N,44,RI,Rhode Island,24,Y,"Annual 100% 2006-2010 current area and volume;  60% annual remeasurement complete; GRM estimates for 60% annual remeasurement.
+",2008-10-27 10:42:14,2021-05-03 10:18:09,6,3,270781646732862
+221354472010661,2011,N,44,RI,Rhode Island,24,Y,Annual 100% 2007-2011 current area and volume; 80% growth removals and mortality FOR CYCLE=6 AND SUBCYCLE=4,2009-12-16 10:04:39,2021-05-03 10:18:09,6,4,270781646732862
+247064062010661,2012,N,44,RI,Rhode Island,24,Y,Annual 100% 2008-2012 current area & volume; 100% growth removals & mortality FOR CYCLE=6 & SUBCYCLE=5,2011-03-28 14:37:08,2021-05-03 10:18:09,6,5,270781646732862
+14527723020004,2013,N,44,RI,Rhode Island,24,Y,Annual 100% 2009-2013 current area & volume; 100% growth removals & mortality FOR CYCLE=7 & SUBCYCLE=1,2012-01-06 10:03:33,2021-05-03 10:18:09,7,1,270781646732862
+168263015020004,2014,N,44,RI,Rhode Island,24,Y,Annual 100% current area and volume; 100% growth removals and mortality; 2012-2014 advanced tree regeneration on P2 plus subsample (12%);; Survey modified from 14 subpanels to 10 subpanels on 02-DEC-13 by MAH;,2013-01-15 10:35:09,2021-05-03 10:18:09,7,2,270781646732862
+221592205020004,2015,N,44,RI,Rhode Island,24,Y,Annual 100% current area and volume; 100% growth removals and mortality;,2013-12-02 20:07:30,2021-05-03 10:18:09,7,3,270781646732862
+304293297489998,2016,N,44,RI,Rhode Island,24,Y,Annual 100% current area and volume; 100% growth removals and mortality;,2015-02-19 13:44:34,2021-05-03 10:18:09,7,4,270781646732862
+362496161489998,2017,N,44,RI,Rhode Island,24,Y,Annual 100% current area and volume; 100% growth removals and mortality;Survey includes 10-subpanels from 2011-2017. 2x statewide.,2015-11-30 08:33:53,2021-05-03 10:18:09,7,5,270781646732862
+444151635489998,2018,N,44,RI,Rhode Island,24,Y,Annual 100% current area and volume; 100% growth removals and mortality;Survey includes 10-subpanels from 2012-2018. 2x statewide.,2017-01-17 11:38:15,2021-05-03 10:18:09,7,6,270781646732862
+504963952126144,2019,N,44,RI,Rhode Island,24,Y,"Annual 100% current area and volume; 100% growth removals and mortality;Survey includes 10-subpanels from 2013-2019. 2x statewide, Panel_70 65-70",2018-02-14 08:09:01,2022-07-21 15:41:22,7,7,270781646732862
+504964064126144,2019,N,44,RI,Rhode Island,24,Y,"Annual 100% current area and volume; 100% growth removals and mortality;Survey includes 10-subpanels from 2013-2019. 2x statewide, Panel_70 1-4",2018-02-14 08:11:16,2021-05-03 10:18:09,8,1,270781646732862
+567163088126144,2020,N,44,RI,Rhode Island,24,Y,"Annual 100% current area and volume; 100% growth removals and mortality;Survey includes 10-subpanels from 2014-2020. 2x statewide, Panel_70 5-14",2018-12-10 12:01:31,2022-07-21 15:41:22,8,2,270781646732862
+719105453290487,2021,N,44,RI,Rhode Island,24,Y,"Annual 100% current area and volume; 100% growth removals and mortality;Survey includes 10-subpanels from 2015-2021. 2x statewide, Panel_70 15-24",2020-01-30 11:58:57,2022-11-17 14:58:58,8,3,270781646732862
+809904919290487,2022,N,44,RI,Rhode Island,24,Y,Annual 100% current area and volume; 100% growth removals and mortality; 2016-2022 down woody material and advanced tree regeneration on P2 plus subsample (12%); Survey includes 10 subpanels for inventory years 2016-2022.  2x statewide.,2021-01-05 09:49:56,2024-04-30 09:49:23,8,4,270781646732862
+928355122290487,2023,N,44,RI,Rhode Island,24,Y,Annual 100% current area and volume; 100% growth removals and mortality; 2017-2023 down woody material and advanced tree regeneration on P2 plus subsample (12%); Survey includes 10 subpanels for inventory years 2017-2023.  2x statewide.,2021-11-01 15:29:32,2025-02-03 11:52:25,8,5,270781646732862
+1285451794290487,2024,N,44,RI,Rhode Island,24,Y,Annual 100% current area and volume; 100% growth removals and mortality; 2018-2024 down woody material and advanced tree regeneration on P2 plus subsample (12%); Survey includes 10 subpanels for inventory years 2018-2024.  2x statewide.,2023-02-09 18:00:27,2025-03-20 09:44:29,8,6,270781646732862
+167774210010661,1999,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-10-09 07:16:21,2021-05-03 15:12:33,6,1,270781647732862
+159474183010661,2000,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-06-16 09:15:03,2021-05-03 15:12:33,7,1,270781647732862
+159469761010661,2002,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-06-16 09:14:48,2021-05-03 15:12:33,9,1,270781647732862
+54164048010538,2003,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2005-03-04 12:23:45,2021-05-03 15:12:33,10,1,270781647732862
+63139658010538,2004,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2005-03-04 12:23:45,2021-05-03 15:12:33,11,1,270781647732862
+63139671010538,2005,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2005-03-04 12:23:45,2021-05-03 15:12:33,12,1,270781647732862
+159227903010661,2007,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-06-16 07:02:58,2021-05-03 15:12:33,14,1,270781647732862
+172086067010661,2009,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-12-05 06:34:27,2021-05-03 15:12:33,16,1,270781647732862
+159470630010661,2001,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-06-16 09:14:51,2021-05-03 15:12:33,8,1,270781647732862
+65380605010538,2006,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2007-01-26 14:14:14,2021-05-03 15:12:33,13,1,270781647732862
+172086043010661,2008,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-12-05 06:34:27,2021-05-03 15:12:33,15,1,270781647732862
+172086091010661,2010,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-12-05 06:34:27,2021-05-03 15:12:33,17,1,270781647732862
+10178895010661,1985,N,44,RI,Rhode Island,24,N,Periodic inventory FOR CYCLE=3 AND SUBCYCLE=0.,2003-09-26 00:00:00,2021-05-03 15:12:33,3,0,270781645732862
+10182583010661,1998,N,44,RI,Rhode Island,24,N,Periodic inventory FOR CYCLE=4 AND SUBCYCLE=0.,2003-09-26 00:00:00,2021-05-03 15:12:33,4,0,270781645732862
+159476699010661,1995,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-06-16 09:15:11,2021-05-03 15:12:33,2,1,270781647732862
+159473995010661,1996,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-06-16 09:15:02,2021-05-03 15:12:33,3,1,270781647732862
+167774211010661,1998,Y,44,RI,Rhode Island,24,Y,Ozone survey record; independent sample from standard survey.,2008-10-09 07:16:21,2021-05-03 15:12:33,5,1,270781647732862
