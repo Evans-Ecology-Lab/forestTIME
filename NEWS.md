@@ -1,5 +1,6 @@
 # forestTIME.builder (development version)
 
+- Code to deal with negative extrapolated values has moved to `adjust_mortality()`.  Therefore, the results of `interpolate_data()` may now contain negative numbers, which are non-sensible.  Use `fia_annualize()` whenever possible to ensure sensible results.
 - `fia_download()` arguments have changed.  `keep_zip` now defaults to `TRUE`.  `extract` options have changed from `TRUE`/`FALSE` to `"forestTIME"`, `"rFIA"`, `"all"`, or `"none"` to extract just files needed by `forestTIME`, those used by `rFIA` (for compatibility), all files, or none.
 - Fixed a bug in interpolation of `CONDPROP_UNAJ`.  Now the workflow retains all "empty" conditions (i.e. `CONDID`s with no trees in them) and properly interpolates `CONDPROP_UNADJ` so the proportion for all conditions in a plot in a year sum to 1 (within rounding error) ([#64](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64)).
 - `fia_annualize()` now adds and `EXPNS` column calculated as the total land area of the state in acres divided by the number of plots in the interpolated data.  It *should* be usable in the same ways the `EXPNS` column in the "raw" FIA data can be used.
