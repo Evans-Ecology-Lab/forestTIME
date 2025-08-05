@@ -33,18 +33,19 @@ data_midpt <-
   # fia_estimate() |>
   # fia_split_composite_ids()
 
-if (nrow(data_midpt) <= 100000) {
-  if (do_both) {
-    data_mortyr <- data_mortyr |>
-      fia_estimate() |>
-      fia_split_composite_ids()
-  }
-  data_midpt <- data_midpt |>
-    fia_estimate() |>
-    fia_split_composite_ids()
-} else {
-  #chunk into a list of data frames with at most `max_rows` rows
   max_rows <- 1.6e6 #larger than CO, which works currently
+  if (nrow(data_midpt) <= max_rows) {
+    if (do_both) {
+      data_mortyr <- data_mortyr |>
+        fia_estimate() |>
+          fia_split_composite_ids()
+      }
+      data_midpt <- data_midpt |>
+        fia_estimate() |>
+          fia_split_composite_ids()
+      } else {
+        
+  #chunk into a list of data frames with at most `max_rows` rows
   n_groups <- ceiling(nrow(data_midpt) / max_rows)
 
   if (do_both) {
