@@ -38,34 +38,33 @@ data_midpt <-
     if (do_both) {
       data_mortyr <- data_mortyr |>
         fia_estimate() |>
-          fia_split_composite_ids()
-      }
-      data_midpt <- data_midpt |>
-        fia_estimate() |>
-          fia_split_composite_ids()
-      } else {
-        
-  #chunk into a list of data frames with at most `max_rows` rows
-  n_groups <- ceiling(nrow(data_midpt) / max_rows)
+        fia_split_composite_ids()
+    }
+    data_midpt <- data_midpt |>
+      fia_estimate() |>
+      fia_split_composite_ids()
+  } else {
+    #chunk into a list of data frames with at most `max_rows` rows
+    n_groups <- ceiling(nrow(data_midpt) / max_rows)
 
-  if (do_both) {
-    data_mortyr <- data_mortyr |> 
-    mutate(cut_group = cut(1:n(), n_groups)) |>
-    group_by(cut_group) |>
-    group_split() |>
-    map(fia_estimate) |> 
-    list_rbind() |> 
-    fia_split_composite_ids()
+    if (do_both) {
+      data_mortyr <- data_mortyr |>
+        mutate(cut_group = cut(1:n(), n_groups)) |>
+        group_by(cut_group) |>
+        group_split() |>
+        map(fia_estimate) |>
+        list_rbind() |>
+        fia_split_composite_ids()
+    }
+
+    data_midpt <- data_midpt |>
+      mutate(cut_group = cut(1:n(), n_groups)) |>
+      group_by(cut_group) |>
+      group_split() |>
+      map(fia_estimate) |>
+      list_rbind() |>
+      fia_split_composite_ids()
   }
-
-  data_midpt <- data_midpt |>
-    mutate(cut_group = cut(1:n(), n_groups)) |>
-    group_by(cut_group) |>
-    group_split() |>
-    map(fia_estimate) |> 
-    list_rbind() |> 
-    fia_split_composite_ids()
-}
 
 # Write out to parquet
 cli::cli_progress_step("Writing results")
