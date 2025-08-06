@@ -16,3 +16,5 @@
 ^scripts$
 ^_publish.yml$
 ^carbon_code$
+^_pkgdown\.yml$
+^pkgdown$
