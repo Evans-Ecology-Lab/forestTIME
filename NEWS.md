@@ -1,6 +1,25 @@
-# forestTIME-builder (development version)
+# forestTIME.builder (development version)
 
-- `expand_data()` now converts `NA`s for `CULL` to 0s (this is what the carbon estimation code in `predictCRM2()` does already anyways) so that they are better interpolated.  `CULL` values are converted *back* to `NA` if `DIA` is < 5 after interpolation by `interpolate_data()` ([#77](https://github.com/mekevans/forestTIME-builder/issues/77)).
+- Code to deal with negative extrapolated values has moved to `adjust_mortality()`.  Therefore, the results of `interpolate_data()` may now contain negative numbers, which are non-sensible.  Use `fia_annualize()` whenever possible to ensure sensible results.
+- `fia_download()` arguments have changed.  `keep_zip` now defaults to `TRUE`.  `extract` options have changed from `TRUE`/`FALSE` to `"forestTIME"`, `"rFIA"`, `"all"`, or `"none"` to extract just files needed by `forestTIME`, those used by `rFIA` (for compatibility), all files, or none.
+- Fixed a bug in interpolation of `CONDPROP_UNAJ`.  Now the workflow retains all "empty" conditions (i.e. `CONDID`s with no trees in them) and properly interpolates `CONDPROP_UNADJ` so the proportion for all conditions in a plot in a year sum to 1 (within rounding error) ([#64](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64)).
+- `fia_annualize()` now adds and `EXPNS` column calculated as the total land area of the state in acres divided by the number of plots in the interpolated data.  It *should* be usable in the same ways the `EXPNS` column in the "raw" FIA data can be used.
+- Renames the `state_codes` dataset to `state_areas` and adds a column for state land area in acres.
+
+# forestTIME.builder 2.0.0
+
+- The separate `prep_carbon()` and `estimate_carbon()` functions are no longer exported and are replaced by the combined `fia_estimate()` function.
+- Added `fia_annualize()` which is a wrapper for `df |> expand_data() |> interpolate_data |> adjust_mortality()` and prefered over running each step separately as the individual steps contain artifacts of the annualization process.
+- Renamed `split_composite_ids()` to `fia_split_composite_ids()`
+- Renamed `add_composite_ids()` to `fia_add_composite_ids()`
+- Renamed `prep_data()` to `fia_tidy()`
+- Renamed `read_fia()` to `fia_load()`
+- Renamed `get_fia_tables()` to `fia_download()`
+
+# forestTIME.builder 1.1.0
+
+- Fixed a bug causing the `INTENSITY` column (and possibly other plot-level variables) to be filled incorrectly by `expand_data()` ([#122](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/122), reported by @brian-f-walters-usfs)
+- `expand_data()` now converts `NA`s for `CULL` to 0s (this is what the carbon estimation code in `predictCRM2()` does already anyways) so that they are better interpolated.  `CULL` values are converted *back* to `NA` if `DIA` is < 5 after interpolation by `interpolate_data()` ([#77](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/77)).
 - `prep_data()` no longer filters out any rows (un-doing #59 and addressing #99).  If you want to remove certain rows, do this between `prep_data()` and `expand_data()`.
 - Trees with only a single measurement have their single measurement carried forward during extrapolation rather than getting dropped from the data (#94, #99).
 - In the case when `MORTYR` is an inventory year where the tree is alive (`STATUSCD` 1), it is now assumed by `adjust_mortality()` that the tree died in the year following `MORTYR` in order to keep the observation (#61).

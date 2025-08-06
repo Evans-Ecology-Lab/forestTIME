@@ -1,0 +1,281 @@
+---
+title: "Imputation Alternatives"
+author:
+  - name: Eric R. Scott
+    orcid: 0000-0002-7430-7879
+date: today
+format: html
+bibliography: references.bib
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(forestTIME.builder)
+library(naniar)
+library(dplyr)
+library(gt)
+library(mice)
+
+data_expanded <-
+  fia_load("RI", dir = here::here("fia")) |>
+  fia_tidy() |>
+  expand_data()
+```
+
+## Definitions
+
+**Missing data** occurrs when there is no recorded value for a variable for an observation.
+It comes in different types:
+
+-   Missing completely at random (MCAR): missingness is unrelated to the data.
+-   Missing at random (MAR): missingness is related to other variables (e.g. men are less likely to fill out a survey on depression).
+-   Missing not at random (MNAR)[^1]: missingness of a variable is related to the variable (e.g depressed people are less likely to fill out a depression survey).
+-   Structured missinngness[^2]: generally a result of combining multiple datasets with different sampling designs.
+
+[^1]: Established imputation methods generally produce biased estimates with these types of data.
+
+[^2]: Established imputation methods can not handle these types of missing data well if at all.
+
+**Imputation** is the process of replacing *missing*[^3] data with substituted values.
+
+[^3]: It is unclear to me if un-observed panels in a panel deisgn fit the definition of *missing* because: 1) Entire observations are missing, not just values from an observation, and 2) none of the definitions of missing data fit.
+    See more [here](https://stefvanbuuren.name/fimd/sec-MCAR.html).
+
+**Interpolation** is a method for estimating data points based on a finite set of known data points, i.e. "threading the needle" between known points.
+
+## Interpolation
+
+Linear interpolation is one method for imputing missing values.
+This is what we are currently doing.
+**This happens at the level of an individual tree and takes a vector as input.** Let's say a tree's `DIA` looks like this in the raw data:
+
+```{r}
+#| echo: false
+tibble(INVYR = 2000:2010, DIA = c(7, NA, NA, NA, NA, 10, NA, NA, NA, NA, 11)) |>
+  gt() |>
+  tab_style(
+    style = cell_fill(color = "grey85"),
+    locations = cells_body(columns = DIA, rows = is.na(DIA))
+  ) |>
+  sub_missing() |>
+  tab_options(table.width = px(100)) |>
+  opt_row_striping(FALSE)
+```
+
+We currently do the linear interpolation with R's built-in linear interpolation function, `approx()`.
+
+```{r}
+years <- 2000:2010
+dia <- c(7, NA, NA, NA, NA, 10, NA, NA, NA, NA, 11)
+
+interpolated <- approx(x = years, y = dia, xout = years)$y
+
+interpolated
+
+plot(years, interpolated, type = "l")
+points(years, dia)
+
+```
+
+We *could* do this with piece-wise linear models between each point...
+
+```{r}
+y1 <- c(7, 10)
+x1 <- c(2000, 2005)
+
+y2 <- c(10, 11)
+x2 <- c(2005, 2010)
+
+m1 <- lm(y1 ~ x1)
+
+m2 <- lm(y2 ~ x2)
+
+interpolated_lm <- c(
+  predict(m1, newdata = list(x1 = 2000:2005)),
+  predict(m2, newdata = list(x2 = 2006:2010))
+)
+
+interpolated_lm
+
+plot(years, interpolated_lm, type = "l")
+points(years, dia)
+```
+
+...but the results are identical.
+You cannot calculate confidence intervals around these lines, so there's no real benefit from doing it this way, unless you need the intercept and slope for something.
+
+```{r}
+#confidence intervals around parameters
+confint(m1)
+#simultaneous confidence bands around fitted line
+predict(
+  m1,
+  newdata = list(x1 = 2000:2005),
+  interval = "confidence",
+  level = 0.95
+)
+```
+
+::: {.callout-tip collapse="true"}
+## Explanation
+
+To draw confidence bands, a $t$ value needs to be caluculated with $n-2$ degrees of freedom, which in this case is 0, but must be 1 or greater.
+There is also ***zero*** residual variance which makes it impossible to calculate confidence bands even with more than 2 points when the best-fit line passes perfectly through all observations.
+:::
+
+We can use linear models in a *different* way to impute missing data though (see [@sec-reg-imp]).
+
+There are other interpolation methods besides linear, for example using polynomials or splines.
+
+```{r}
+interpolated_spline <- spline(years, dia)
+interpolated_spline
+plot(interpolated_spline$x, interpolated_spline$y, type = "l")
+points(years, dia)
+```
+
+This *could* bet a better approximation than linear interpolation, but there is no way to know for sure without comparing to some ground truth values.
+
+## Regression Imputation {#sec-reg-imp}
+
+Besides interpolation, there are other ways to impute missing values.
+**Regression imputation**, for example, fills in missing values in a column of a dataset based on some modeled relationship with other columns in the dataset and the values of those columns for that row.
+For example, if a value for diameter was missing for a tree, it could be predicted from a modeled relationship with height, cull, crown ratio, and other variables *if they are known for that observation*[^4].
+
+[^4]: Generally this only works when most values in an observation (row) are not missing.
+    That is not the case with our "expanded" FIA data where *every* value is missing in non-inventory years.
+
+**This takes an entire dataset as input rather than individual trees** because it relies on modeled relationships between multiple variables in the same observation.
+
+Take this dataset for example
+
+```{r}
+#| echo: false
+
+set.seed(123423)
+df <- tibble(
+  a = 1:5,
+  b = a + rnorm(5),
+  c = a * 0.1 * rnorm(5, mean = 0.1, sd = 0.1)
+) |>
+  mutate(b = if_else(a == 3, NA, b))
+
+df |>
+  gt() |>
+  tab_style(
+    style = cell_fill(color = "gray85"),
+    locations = cells_body(columns = c(b), rows = 3)
+  ) |>
+  fmt_number(decimals = 4)
+
+```
+
+To fill in the missing value for `b` in row 3, here's what you might do, conceptually, to implement regression imputation:
+
+1.  Fit a regression model with the formula `b ~ a + c`. (This would not include row 3 because of the NA, but that's ok!)
+2.  Use that model to get the predicted (i.e. fitted) value of `b` when `a` = 3 and `c` = 0.0467.
+
+In practice, you are not limited to linear regression for the model and you may add transformations of variables including lag and lead as predictors—overfitting is not an issue in the same way it is for causal inference (other than that it slows computation).
+
+This is extended by **multiple imputation** where regression imputation is performed *with stochasticity* producing multiple versions of a completed dataset.
+These multiple imputed datasets can be analyzed separately and then the results can be pooled as a way of incorporating the uncertainty involved in imputation.
+
+```{r}
+#| label: fig-mice
+#| echo: false
+#| fig-cap: An example of 3 imputed data sets produced by multiple imputation using the `mice` package.
+
+df_imp <- df |> mice(m = 3, print = FALSE)
+
+gts <- df_imp |>
+  complete(action = "all") |>
+  purrr::map2(c("purple", "green", "lightblue"), \(x, col) {
+    gt(x) |>
+      tab_style(
+        style = cell_fill(color = col),
+        locations = cells_body(columns = c(b), rows = 3)
+      ) |>
+      fmt_number(decimals = 4)
+  })
+
+gt_group(.list = gts) |> grp_options(table.layout = "auto")
+```
+
+The `mice` package is an excellent toolkit for multiple imputation in R, should you decide to go this route [@buuren2011].
+
+## Challenges for FIA data
+
+When data are "missing" in the expanded FIA data, it is *entire rows/observations* that are missing, making this kind of regression imputation **mathematically impossible** unless you were to add columns with non-missing values for those rows (e.g. lags and leads of variables or ancillary data).
+Even then, regression imputation generally only produces accurate, non-biased results when a small number of values are missing, and in the case of the "expanded" FIA data, ***most of the data are missing*** (@fig-miss).
+
+```{r}
+#| label: fig-miss
+#| fig-cap: A sample of 0.5% of the rows from RI after expanding to include years between surveys. 76% of the values of HT DIA and ACTUALHT are "missing".
+#| echo: false
+
+naniar::vis_miss(
+  slice_head(
+    data_expanded |> select(tree_ID, YEAR, DIA, HT, ACTUALHT),
+    prop = 0.005
+  ),
+  show_perc = FALSE
+)
+```
+
+::: callout-tip
+## What about growth models?
+
+One could possibly use tree growth models to *simulate* data between surveys, but I'm not famililar enough with how these growth models work to make recommendations on how to implement them.
+It also seems like it would be challenging to get simulated data to "connect up" to real observations in inventory years.
+:::
+
+## Getting "expanded" FIA data to work with
+
+Below is a basic workflow to get the "expanded" data with missing values for every year including non-survey years as described in more detail in the [`forestTIME.builder` vignette](https://cct-datascience.r-universe.dev/articles/forestTIME.builder/forestTIME-builder.html).
+
+```{r}
+#| eval: false
+
+# Install the most recent version of forestTIME.builder from GitHub:
+# pak::pak("Evans-Ecology-Lab/forestTIME-builder")
+library(forestTIME.builder)
+# Download data
+fia_download(
+  state = "RI",
+  download_dir = "fia",
+  keep_zip = TRUE
+)
+
+# Load the data
+db <- fia_load("RI", dir = "fia")
+
+# Join and tidy the tables
+data <- fia_tidy(db)
+
+# Expand to include all years
+data_expanded <- expand_data(data) #<-this is what you'd want to work with
+
+# Perform linear interpolation to impute missing values
+data_interpolated <- interpolate_data(data_expanded)
+
+# Adjust for mortality (e.g. fallen dead trees can't have DIA measurments)
+data_completed <- adjust_mortality(data_interpolated)
+
+```
+
+If you were to attempt regression imputation or simulating tree growth, you'd likely want to start with `data_expanded` as created above.
+
+## Alternatives to imputation for data analysis
+
+Rather than filling in missing values through imputation, we can make use of statistical analysis methods that *work with* the panel design of FIA.
+This includes the familiar design-based estimators, model-assisted estimators, and statistical modeling methods.
+
+With the design-based estimators, there is a trade-off between spatial and temporal accuracy in how estimates are aggregated to produce annual estimates [@stanke2022, @stanke2021].
+For example, while the FIA design guarantees adequate sample size for annual state-level estimates, it presents a challenge for small-area estimation because there may be few or no plots inventoried in a particular year in the area of interest.
+However, there are a number of well-documented methods for improving small-area estimation using ancillary data (e.g. climate data products) [@dettmann2022; @cao2022; @frescino2022; @schroeder2022; @may2023; @nagle2019]
+
+@schroeder2022 describes a method to produce a map of expansion factors (`EXPNS`) that can be used "to derive statistically valid estimates in areas that are too small to support direct estimation with FIA data alone." This also uses ancillary input data and a complex algorithm [@nagle2019], but once the `EXPNS` are created, it sounds like you can interactively calculate estimates for any area using this tool—something potentially of great interest to this group.
+Unfortunatly, I could not find a live version of their Shiny app to test out (the link they provide is broken and they do not report a public archive of their code).
+If someone reached out to get the code, we could see if we could get it working.

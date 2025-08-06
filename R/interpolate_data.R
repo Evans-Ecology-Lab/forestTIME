@@ -1,23 +1,27 @@
 #' Interpolate expanded tree data
 #'
-#' Fills in `NA`s between survey years with either linear interpolation /
-#' extrapolation or by switching categorical variables at the midpoint (rounded
-#' down) between surveys. Linear interpolation/extrapolation is accomplished
-#' with [inter_extra_polate()] and the categorical variables are handled with
-#' [step_interp()]. Also converts temporary `999` values created by
+#' This is an "internal" function—most users will want to run [fia_annualize()]
+#' instead. Fills in `NA`s between survey years with either linear interpolation
+#' / extrapolation or by switching categorical variables at the midpoint
+#' (rounded down) between surveys. Linear interpolation/extrapolation is
+#' accomplished with [inter_extra_polate()] and the categorical variables are
+#' handled with [step_interp()]. Also converts temporary `999` values created by
 #' [expand_data()] back to `NA`s.  This also assigns a value for `TPA_UNADJ`
 #' based on `DESIGNCD` and interpolated values of `DIA` according to Appendix G
-#' of the FIADB user guide.
+#' of the FIADB user guide and adds an `EXPNS` column equivalent to the one in
+#' FIA, but accounting for the fact that the data now contains interpolated
+#' plots (i.e. `EXPNS` = the state land area divided by the total number of
+#' plots in that state in that year in the *interpolated* data).
 #'
 #' @note If `HT` or `ACTUALHT` are extrapolated to values < 4.5 (or < 1 for
 #' woodland species) OR `DIA` is extrapolated to < 1, the tree is marked as
 #' fallen dead (`STATUSCD` 2 and `STANDING_DEAD_CD` 0). All measurements for
 #' these trees will be removed (set to `NA`) by [adjust_mortality()]. Trees with
 #' only one measurement have that measurement carried forward as appropriate
-#' (e.g. until fallen and dead or in non-sampled condition). 
-#' 
+#' (e.g. until fallen and dead or in non-sampled condition).
+#'
 #' Since missing values for `CULL` are already assumed to be 0 by
-#' [estimate_carbon()], they are converted to 0s by [expand_data()] for better
+#' [fia_estimate()], they are converted to 0s by [expand_data()] for better
 #' linear interpolation here and then set back to `NA` if `DIA` < 5.
 #'
 #' @references Burrill, E.A., Christensen, G.A., Conkling, B.L., DiTommaso,
@@ -26,13 +30,21 @@
 #' (NFI). USDA Forest Service.
 #' <https://research.fs.usda.gov/understory/forest-inventory-and-analysis-database-user-guide-nfi>
 #'
-#' @param data_expanded tibble produced by [expand_data()] 
-#' @export 
+#' @param data_expanded tibble produced by [expand_data()]
+#' @export
+#' @keywords internal
 #' @returns a tibble
 interpolate_data <- function(data_expanded) {
   cli::cli_progress_step("Interpolating between surveys")
   #variables to linearly interpolate/extrapolate
-  cols_interpolate <- c("ACTUALHT", "DIA", "HT", "CULL", "CR", "CONDPROP_UNADJ")
+  cols_interpolate <- c(
+    "ACTUALHT",
+    "DIA",
+    "HT",
+    "CULL",
+    "CR"#,
+    #  "CONDPROP_UNADJ" #this gets interpolated separately
+  )
   #variables that switch at the midpoint (rounded down) between surveys
   cols_midpt_switch <- c(
     "PLT_CN", #used to join to POP tables.  Possibly a better way...
@@ -45,6 +57,71 @@ interpolate_data <- function(data_expanded) {
     "COND_STATUS_CD"
   )
 
+
+  # Interpolate COND table separately to account for the number of conditions
+  # (CONDIDs) changing from year to year
+  # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64
+  cond <- data_expanded |>
+    dplyr::filter(interpolated == FALSE) |> 
+    dplyr::group_by(plot_ID, YEAR, CONDID, COND_STATUS_CD) |>
+    dplyr::filter(!is.na(CONDID)) |>
+    dplyr::summarize(
+      CONDPROP_UNADJ = dplyr::first(CONDPROP_UNADJ), #they *should* all be the same
+      .groups = "drop"
+    )
+
+  # Make it so each plot has every CONDID in every year and if the CONDID wasn't
+  # in the original data, just set CONDPROP_UNADJ to 0.  This is all so linear
+  # interpolation works correctly
+  all_conds <- cond |>
+    dplyr::group_by(plot_ID) |>
+    tidyr::expand(
+      CONDID = unique(CONDID),
+      YEAR = unique(YEAR)
+    )
+
+  cond_complete <- dplyr::full_join(
+    cond,
+    all_conds,
+    by = dplyr::join_by(plot_ID, YEAR, CONDID)
+  ) |>
+    dplyr::mutate(
+      CONDPROP_UNADJ = dplyr::if_else(
+        is.na(CONDPROP_UNADJ) & !is.na(CONDID),
+        0,
+        CONDPROP_UNADJ
+      )
+    )
+
+  cond_all_years <-
+    cond_complete |>
+    dplyr::group_by(plot_ID) |>
+    tidyr::expand(CONDID, YEAR = tidyr::full_seq(YEAR, 1))
+
+  # Expand and interpolate the COND table to get CONDPROP_UNADJ values that sum
+  # to 1 for each plot in a given year.
+
+  cond_expanded <- dplyr::right_join(
+    cond_complete,
+    cond_all_years,
+    by = dplyr::join_by(plot_ID, CONDID, YEAR)
+  ) |>
+    dplyr::arrange(plot_ID, YEAR, CONDID)
+
+  cond_interpolated <-
+    cond_expanded |>
+    dplyr::group_by(plot_ID, CONDID) |>
+    dplyr::mutate(
+      CONDPROP_UNADJ = inter_extra_polate(
+        YEAR,
+        CONDPROP_UNADJ,
+        extrapolate = FALSE
+      ),
+      COND_STATUS_CD = step_interp(COND_STATUS_CD)
+    )
+
+
+  # interpolate the data
   data_interpolated <- data_expanded |>
     dplyr::group_by(plot_ID, tree_ID) |>
     dplyr::mutate(
@@ -63,7 +140,7 @@ interpolate_data <- function(data_expanded) {
     )) |>
     dplyr::ungroup() |>
     # Cull only measured for trees with DIA >= 5
-    dplyr::mutate(CULL = dplyr::if_else(DIA < 5, NA, CULL)) |> 
+    dplyr::mutate(CULL = dplyr::if_else(DIA < 5, NA, CULL)) |>
     #join TPA_UNADJ
     dplyr::left_join(
       tpa_rules,
@@ -74,36 +151,36 @@ interpolate_data <- function(data_expanded) {
     ) |>
     dplyr::select(-min_DIA, -max_DIA)
 
-  # If trees are interpolated to below FIA thresholds for being measured, set
-  # them to fallen dead. For most trees, this is DIA < 1 and ACTUALHT < 4.5.
-  # For woodland species, the ACTUALHT threshold is 1. To figure out if a tree
-  # is a woodland species, we need to pull in one of the ref tables
-  # temporarily.
+  # merge the interpolated COND values back in
+  data_adjusted_cond <- dplyr::full_join(
+    data_interpolated |> dplyr::select(-CONDPROP_UNADJ, -COND_STATUS_CD),
+    cond_interpolated,
+    by = dplyr::join_by(plot_ID, CONDID, YEAR)
+  )
 
-  ref_species <-
-    REF_SPECIES |>
-    dplyr::select(
-      SPCD,
-      JENKINS_SPGRPCD
-    )
-
-  data_interpolated |>
-    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |>
-    #TODO is there a way of only having to do the case_when once?  E.g. would it
-    #be faster to create a column "dead_fallen" and then in a subsequent step
-    #use dead_fallen to set STATUSCD and STANDING_DEAD_CD? this function feels a
-    #lot slower since adding this bit
+  # merge in land areas and calculate EXPNS
+  out <- data_adjusted_cond |>
     dplyr::mutate(
-      STATUSCD = dplyr::case_when(
-        JENKINS_SPGRPCD < 10 & (DIA < 1 | HT < 4.5 | ACTUALHT < 4.5) ~ 2,
-        JENKINS_SPGRPCD == 10 & (DIA < 1 | HT < 1 | ACTUALHT < 1) ~ 2,
-        .default = STATUSCD
-      ),
-      STANDING_DEAD_CD = dplyr::case_when(
-        JENKINS_SPGRPCD < 10 & (DIA < 1 | HT < 4.5 | ACTUALHT < 4.5) ~ 0,
-        JENKINS_SPGRPCD == 10 & (DIA < 1 | HT < 1 | ACTUALHT < 1) ~ 0,
-        .default = STANDING_DEAD_CD
-      )
+      #get STATECD out of plot_ID
+      STATECD = as.numeric(stringr::str_extract(plot_ID, "\\d+(?=_)")),
+      # .before = plot_ID
     ) |> 
-    dplyr::select(-JENKINS_SPGRPCD)
+    dplyr::left_join(
+      state_areas |> dplyr::select(STATECD, state_land_area),
+      by = dplyr::join_by(STATECD)
+    ) |>
+    dplyr::group_by(YEAR, STATECD) |>
+    dplyr::mutate(
+      EXPNS = state_land_area / length(unique(plot_ID))
+    ) |> 
+    dplyr::ungroup() |>
+    dplyr::select(-STATECD, -state_land_area) |> 
+    # Switch tree_ID for empty conditions back to NA
+    dplyr::mutate(
+      tree_ID = dplyr::if_else(stringr::str_starts(tree_ID, "NA_"), NA, tree_ID)
+    ) |> 
+    dplyr::arrange(plot_ID, tree_ID, YEAR, CONDID)
+
+  # return:
+  out
 }

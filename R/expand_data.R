@@ -1,16 +1,18 @@
 #' Expand data to include years between inventory years
 #'
-#' This expands the data frame in preparation for interpolation of now "missing"
-#' values between inventory years. Time-invariant variables `tree_ID`,
-#' `plot_ID`, `SPCD`, `ECOSUBCD`, `DESIGNCD`, and `PROP_BASIS` are simply filled
-#' in with [tidyr::fill()]. Categorical variables `STATUDSCD`, `RECONCILECD`,
-#' `STDORGCD`, `CONDID`, and `COND_STATUS_CD` are modified to replace `NA`s with
-#' `999` so that they are properly interpolated by [interpolate_data()] (which
-#' converts them back to `NA`s).
+#' This is an "internal" function—most users will want to run [fia_annualize()]
+#' instead. This expands the data frame in preparation for interpolation of now
+#' "missing" values between inventory years. Time-invariant variables `tree_ID`,
+#' `plot_ID`, `INTENSITY`, `SPCD`, `MORTYR`, `ECOSUBCD`, `DESIGNCD`, and
+#' `PROP_BASIS` are simply filled in with [tidyr::fill()]. Categorical variables
+#' `STATUDSCD`, `RECONCILECD`, `STDORGCD`, `CONDID`, and `COND_STATUS_CD` are
+#' modified to replace `NA`s with `999` so that they are properly interpolated
+#' by [interpolate_data()] (which converts them back to `NA`s).
 #'
-#' @param data tibble produced by [read_fia()]---must have at least `tree_ID`
+#' @param data tibble produced by [fia_tidy()]---must have at least `tree_ID`
 #'   and `INVYR` columns.
 #' @export
+#' @keywords internal
 #' @returns a tibble with a logical column `interpolated` marking whether a row
 #'   was present in the original data (`FALSE`) or was added (`TRUE`).
 expand_data <- function(data) {
@@ -19,7 +21,7 @@ expand_data <- function(data) {
   data <- data |>
     # replace NAs for some categorical variables with 999 (temporarily) so they
     # switch from NA correctly
-    # (https://github.com/mekevans/forestTIME-builder/issues/72)
+    # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/72)
     dplyr::mutate(dplyr::across(
       any_of(c(
         "STATUSCD",
@@ -30,11 +32,18 @@ expand_data <- function(data) {
         "CONDID",
         "COND_STATUS_CD"
       )),
-      \(x) dplyr::if_else(is.na(x), 999, x)
+      \(x) dplyr::if_else(is.na(x) & !is.na(tree_ID), 999, x)
     )) |> 
     # replace NAs for CULL with 0s so they interpolate correctly
-    # (https://github.com/mekevans/forestTIME-builder/issues/77)
-    dplyr::mutate(CULL = dplyr::if_else(is.na(CULL), 0, CULL))
+    # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/77)
+    dplyr::mutate(CULL = dplyr::if_else(is.na(CULL) & !is.na(tree_ID), 0, CULL)) |> 
+    # Some rows are all NAs just to keep all CONDID x plot_ID combinations in
+    # the data, but they interfere with interpolation because all tree_IDs of NA
+    # get treated like the same tree. So we make them unique per CONDID and
+    # later they get changed back to NA in interpolate_data()
+    dplyr::mutate(
+      tree_ID = dplyr::if_else(is.na(tree_ID), paste0("NA_", CONDID), tree_ID)
+    )
 
   all_yrs <-
     data |>
@@ -56,7 +65,7 @@ expand_data <- function(data) {
     dplyr::rename(YEAR = INVYR) |>
     dplyr::arrange(tree_ID, YEAR) |>
     #fill down any time-invariant columns
-    dplyr::group_by(tree_ID) |>
+    dplyr::group_by(plot_ID, tree_ID) |>
     tidyr::fill(any_of(c(
       "plot_ID",
       "INTENSITY",

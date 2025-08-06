@@ -1,38 +1,23 @@
 #' Estimate carbon
 #'
-#' Estimates carbon using code provided by David Walker
+#' Estimates carbon using code provided by David Walker with slight
+#' modifications
 #'
-#'
-#' @param data prepped data produced by [prep_carbon()].
-#'
-#' @references TODO: add ref to the paper this code is from
-#' @export
+#' @param data_prepped tibble produced by [prep_carbon()]. 
+#' @author David Walker
+#' @noRd
 #' @returns a tibble
-estimate_carbon <- function(data) {
+estimate_carbon <- function(data_prepped) {
   med_cr_prop <-
     median_crprop_csv |>
     dplyr::mutate(SFTWD_HRDWD = dplyr::if_else(hwd_yn == 'N', 'S', 'H'))
 
-  #seems like should go in prep_carbon() maybe?
-  data_prepped <-
-    data |>
-    dplyr::mutate(
-      PROVINCE = getDivision(ECOSUBCD, TRUE),
-      DIVISION = getDivision(ECOSUBCD)
-    ) |>
-    # no trees with missing heights and no woodland species
-    dplyr::filter(JENKINS_SPGRPCD < 10, !is.na(HT)) |>
-    #this is only necessary because this code uses [] for indexing instead of `filter()`
-    dplyr::mutate(
-      dplyr::across(
-        c(DECAYCD, STANDING_DEAD_CD),
-        \(x) dplyr::if_else(STATUSCD == 1, 0, x)
-      ),
-      CULL = ifelse(is.na(CULL), 0, CULL)
-    )
-
   fiadb <-
     data_prepped |>
+    # Can't estimate carbon for trees with missing heights or woodland species woodland species
+    dplyr::filter(JENKINS_SPGRPCD < 10, !is.na(HT)) |>
+    # Can't estimate carbon for empty plots
+    dplyr::filter(!is.na(tree_ID) | !stringr::str_starts(tree_ID, "NA_")) |> 
     dplyr::left_join(
       med_cr_prop |> dplyr::select(PROVINCE = Province, SFTWD_HRDWD, CRmn),
       by = dplyr::join_by(SFTWD_HRDWD, PROVINCE)
@@ -128,5 +113,5 @@ estimate_carbon <- function(data) {
     )
 
   #return
-  left_join(data, fiadb2, by = join_by(plot_ID, tree_ID, YEAR))
+  dplyr::left_join(data_prepped, fiadb2, by = dplyr::join_by(plot_ID, tree_ID, YEAR))
 }

@@ -2,14 +2,15 @@ state = Sys.getenv("STATE", unset = "RI") #use RI for testing because it is smal
 
 library(forestTIME.builder)
 library(dplyr)
+library(purrr)
 
 # Data Download
-get_fia_tables(states = state, keep_zip = FALSE)
+fia_download(states = state, keep_zip = FALSE)
 
 # Data prep
 data <-
-  read_fia(states = state) |>
-  prep_data()
+  fia_load(states = state) |>
+  fia_tidy()
 
 # Expand to include all years between surveys and interpolate/extrapolate
 data_interpolated <- data |> expand_data() |> interpolate_data()
@@ -21,18 +22,49 @@ do_both <- any(!is.na(data$MORTYR))
 if (do_both) {
   data_mortyr <-
     data_interpolated |>
-    adjust_mortality(use_mortyr = TRUE) |>
-    prep_carbon() |>
-    estimate_carbon() |>
-    split_composite_ids()
+    adjust_mortality(use_mortyr = TRUE) #|>
+    # fia_estimate() |> 
+    # fia_split_composite_ids()
 }
 
 data_midpt <-
   data_interpolated |>
-  adjust_mortality(use_mortyr = FALSE) |>
-  prep_carbon() |>
-  estimate_carbon() |>
-  split_composite_ids()
+  adjust_mortality(use_mortyr = FALSE)#|>
+  # fia_estimate() |>
+  # fia_split_composite_ids()
+
+  max_rows <- 1.6e6 #larger than CO, which works currently
+  if (nrow(data_midpt) <= max_rows) {
+    if (do_both) {
+      data_mortyr <- data_mortyr |>
+        fia_estimate() |>
+        fia_split_composite_ids()
+    }
+    data_midpt <- data_midpt |>
+      fia_estimate() |>
+      fia_split_composite_ids()
+  } else {
+    #chunk into a list of data frames with at most `max_rows` rows
+    n_groups <- ceiling(nrow(data_midpt) / max_rows)
+
+    if (do_both) {
+      data_mortyr <- data_mortyr |>
+        mutate(cut_group = cut(1:n(), n_groups)) |>
+        group_by(cut_group) |>
+        group_split() |>
+        map(fia_estimate) |>
+        list_rbind() |>
+        fia_split_composite_ids()
+    }
+
+    data_midpt <- data_midpt |>
+      mutate(cut_group = cut(1:n(), n_groups)) |>
+      group_by(cut_group) |>
+      group_split() |>
+      map(fia_estimate) |>
+      list_rbind() |>
+      fia_split_composite_ids()
+  }
 
 # Write out to parquet
 cli::cli_progress_step("Writing results")

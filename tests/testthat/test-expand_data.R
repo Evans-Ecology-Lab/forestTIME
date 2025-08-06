@@ -2,11 +2,11 @@ library(dplyr)
 test_that("expand_data() works", {
   # fmt: skip
   df <- dplyr::tribble( 
-    ~plot_ID, ~tree_ID, ~INVYR, ~HT, ~DIA, ~CULL, ~SPCD,
-    "p1", "A", 2000, 12, 24, 0, 123,
-    "p1", "A", 2005, 18, 26, 0, 123,
-    "p1", "B", 2000, 5, 10, 0, 222,
-    "p1", "B", 2005, 7, 11, 0, 222
+    ~plot_ID, ~tree_ID, ~INVYR, ~HT, ~DIA, ~CULL, ~SPCD, ~CONDID,
+    "p1", "A", 2000, 12, 24, 0, 123, 1,
+    "p1", "A", 2005, 18, 26, 0, 123, 1,
+    "p1", "B", 2000, 5, 10, 0, 222, 1,
+    "p1", "B", 2005, 7, 11, 0, 222, 1,
   )
 
   df_expanded <- expand_data(df)
@@ -23,11 +23,11 @@ test_that("expand_data() works", {
 test_that("interpolation flag works", {
   # fmt: skip
   df <- dplyr::tribble( 
-      ~plot_ID, ~tree_ID, ~INVYR, ~HT, ~DIA,~CULL, ~SPCD,
-      "p1", "A", 2000, 12, 24, 0, 123,
-      "p1", "A", 2005, NA, NA, NA, NA,
-      "p1", "A", 2010, 5, 10, 0, 222,
-      "p1", "A", 2015, 7, 11, 0, 222
+      ~plot_ID, ~tree_ID, ~INVYR, ~HT, ~DIA,~CULL, ~SPCD, ~CONDID,
+      "p1", "A", 2000, 12, 24, 0, 123, 1,
+      "p1", "A", 2005, NA, NA, NA, NA, 1,
+      "p1", "A", 2010, 5, 10, 0, 222, 1,
+      "p1", "A", 2015, 7, 11, 0, 222, 1
     )
   df_expanded <- expand_data(df)
 
