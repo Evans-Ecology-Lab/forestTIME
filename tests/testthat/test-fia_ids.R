@@ -23,15 +23,61 @@ test_that("fia_add_composite_ids() works", {
 })
 
 test_that("fia_split_composite_ids() works", {
-  df <- tibble::tibble(plot_ID = "44_1_3_2", tree_ID = "44_1_3_2_7_134")
+  df <- dplyr::tibble(
+    plot_ID = c("44_1_3_2", "44_1_3_2"),
+    tree_ID = c("44_1_3_2_7_134", NA)
+  )
   df_split <- fia_split_composite_ids(df)
 
   expect_equal(
     sort(colnames(df_split)),
-    sort(c("plot_ID", "tree_ID", "STATECD", "UNITCD", "COUNTYCD", "PLOT", "SUBP", "TREE"))
+    sort(c(
+      "plot_ID",
+      "tree_ID",
+      "STATECD",
+      "UNITCD",
+      "COUNTYCD",
+      "PLOT",
+      "SUBP",
+      "TREE"
+    ))
   )
-  
-  expect_true(
-    all(!is.na(df_split))
+
+  expect_identical(
+    df_split,
+    dplyr::tibble(
+      STATECD = c("44", "44"),
+      UNITCD = c("1", "1"),
+      COUNTYCD = c("3", "3"),
+      PLOT = c("2", "2"),
+      plot_ID = c("44_1_3_2", "44_1_3_2"),
+      SUBP = c("7", NA),
+      TREE = c("134", NA),
+      tree_ID = c("44_1_3_2_7_134", NA)
+    )
+  )
+
+  expect_identical(
+    df |> dplyr::select(plot_ID) |> fia_split_composite_ids(),
+    dplyr::tibble(
+      STATECD = c("44", "44"),
+      UNITCD = c("1", "1"),
+      COUNTYCD = c("3", "3"),
+      PLOT = c("2", "2"),
+      plot_ID = c("44_1_3_2", "44_1_3_2")
+    )
+  )
+
+  expect_identical(
+    df |> dplyr::select(tree_ID) |> fia_split_composite_ids(),
+    dplyr::tibble(
+      STATECD = c("44", NA),
+      UNITCD = c("1", NA),
+      COUNTYCD = c("3", NA),
+      PLOT = c("2", NA),
+      SUBP = c("7", NA),
+      TREE = c("134", NA),
+      tree_ID = c("44_1_3_2_7_134", NA)
+    )
   )
 })

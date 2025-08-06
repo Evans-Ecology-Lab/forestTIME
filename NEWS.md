@@ -1,5 +1,6 @@
 # forestTIME.builder (development version)
 
+- Fixed a bug in `fia_split_composite_ids()` that caused it to fail when `tree_ID` was `NA` (as it is in conditions with no observations). It now falls back on the information in `plot_ID` when `tree_ID` is in the data frame but `NA` ([#149](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/149)).
 - `fia_estimate()` now returns the additional variables `DRIBIO_FOLIAGE`, `VOLTSGRS`, and `VOLTSSND` in addition to `DRYBIO_AG` and `CARBON_AG`.
 - Code to deal with negative extrapolated values has moved to `adjust_mortality()`.  Therefore, the results of `interpolate_data()` may now contain negative numbers, which are non-sensible.  Use `fia_annualize()` whenever possible to ensure sensible results.
 - `fia_download()` arguments have changed.  `keep_zip` now defaults to `TRUE`.  `extract` options have changed from `TRUE`/`FALSE` to `"forestTIME"`, `"rFIA"`, `"all"`, or `"none"` to extract just files needed by `forestTIME`, those used by `rFIA` (for compatibility), all files, or none.

@@ -54,25 +54,46 @@ fia_split_composite_ids <- function(data) {
     stop("No composite ID columns found")
   }
 
-  # tree_ID contains all the information in plot_ID, so if tree_ID exists, it's
-  # enough to just split that one
-  if ("tree_ID" %in% cols) {
-    data <- data |>
-      tidyr::separate_wider_delim(
-        tree_ID,
-        delim = "_",
-        names = c("STATECD", "UNITCD", "COUNTYCD", "PLOT", "SUBP", "TREE"),
-        cols_remove = FALSE
-      )
-    return(data)
-  }
-
   if ("plot_ID" %in% cols) {
+    # Start with plot_ID because there should always be a plot_ID (there may not
+    # be a tree_ID if a condition has no observations)
     data <- data |>
       tidyr::separate_wider_delim(
         plot_ID,
         delim = "_",
         names = c("STATECD", "UNITCD", "COUNTYCD", "PLOT"),
+        cols_remove = FALSE
+      )
+    if ("tree_ID" %in% cols) {
+      #then, get additional data from tree_ID
+      data <- data |>
+        tidyr::separate_wider_regex(
+          tree_ID,
+          patterns = c(
+            ".*", #don't use first four values—they are the same as in plot_ID
+            "_",
+            ".*",
+            "_",
+            ".*",
+            "_",
+            ".*",
+            "_",
+            SUBP = ".*",
+            "_",
+            TREE = ".*"
+          ),
+          cols_remove = FALSE
+        )
+    }
+    return(data)
+  } else {
+    # If only tree_ID and not plot_ID exists, then tree_ID contains all the
+    # information in plot_ID
+    data <- data |>
+      tidyr::separate_wider_delim(
+        tree_ID,
+        delim = "_",
+        names = c("STATECD", "UNITCD", "COUNTYCD", "PLOT", "SUBP", "TREE"),
         cols_remove = FALSE
       )
     return(data)
