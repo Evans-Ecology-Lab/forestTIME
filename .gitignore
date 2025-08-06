@@ -35,9 +35,8 @@ inst/doc
 /Meta/
 **/.quarto/
 *.zip
-docs/.posit/publish/Investigating dropped trees-OEJ2.toml
-docs/.posit/publish/deployments/deployment-E1MC.toml
+notes/.posit/publish/Investigating dropped trees-OEJ2.toml
+notes/.posit/publish/deployments/deployment-E1MC.toml
 
-docs/imputation_alternatives_files/
-docs/imputation_alternatives.html
-docs
+notes/imputation_alternatives_files/
+notes/imputation_alternatives.html
