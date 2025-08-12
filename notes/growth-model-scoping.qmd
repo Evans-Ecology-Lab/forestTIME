@@ -63,6 +63,8 @@ Ultimately it doesn't matter what the model is, as long as it has a `predict()` 
 predict(m_ht, newdata = list(ht = 10, species = "oak"))
 ```
 
+You can save the model out to disk as a .rds file at the end of a model fitting script and read it back in at the beginning of your simulation script (or include it in the `forestTIME.builder` R package as internal data). Also check out the [`butcher`](https://butcher.tidymodels.org) package for functions to shrink the size of model objects to improve efficiency.
+
 ## Growth prediction
 
 ```{r}
