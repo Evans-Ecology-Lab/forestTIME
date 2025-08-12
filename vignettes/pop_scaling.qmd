@@ -152,7 +152,7 @@ Using these expansion factors, we can follow the methods in the [FIA demystified
 The variances calculated below are not *variance estimators* (in the sense that they are not "design-based"), they are just the traditional sample variance of a random variable.
 This may not be appropriate to "mix" with the mean and ratio estimators calculated below.
 
-E.g. the variance *estimator* for per-acre ratios (without post-stratification weights) is equation 4.17 in @bechtold2005 which I'm fairly certain is *not* the same as the formula the `var()` function uses to calculate [variance of a random variable](https://en.wikipedia.org/wiki/Variance):
+E.g. the variance *estimator* for per-acre ratios (without post-stratification weights) is equation 4.17 in @bechtold2005 and equation 11 in @westfall2022 which is *not* the same as the formula the `var()` function uses to calculate [variance of a random variable](https://en.wikipedia.org/wiki/Variance):
 
 $$
 s^2 = \frac{1}{N-1}\sum_{i=1}^N(x_i - \bar{x})^2
