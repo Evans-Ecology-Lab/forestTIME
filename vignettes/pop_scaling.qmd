@@ -159,6 +159,25 @@ s^2 = \frac{1}{N-1}\sum_{i=1}^N(x_i - \bar{x})^2
 $$
 :::
 
+I'll create a version of `var()` that takes an `n` argument so we can take into account all the plots with 0s due to a 0 domain indicator.
+
+```{r}
+var_n <- function(x, n = length(x), na.rm = FALSE) {
+  if (na.rm) {
+    x = na.omit(x)
+  }
+  sum((x - mean(x))^2) / (n - 1)
+}
+```
+
+
+A note in `rFIA` about sampling error from `?biomass` (emphasis mine):
+
+>All sampling error estimates (SE) are returned as the "percent coefficient of variation" (standard deviation / mean * 100) for consistency with EVALIDator.
+>**IMPORTANT: sampling error cannot be used to construct confidence intervals.** 
+>Please use variance = TRUE for that (i.e., return variance and sample size instead of sampling error).
+
+
 ```{r}
 #| label: estimators
 
@@ -182,11 +201,16 @@ agc_pop <- inner_join(tree_totals, area_totals) |>
   group_by(YEAR) |>
   summarize(
     CARB_AG_TOTAL = sum(carbPlot, na.rm = TRUE), # tons/plot
-    CARB_AG_VAR = var(carbPlot, na.rm = TRUE),
     CARB_AG_N = sum(carbPlot > 0, na.rm = TRUE),
+    # CARB_AG_VAR = var(carbPlot, na.rm = TRUE),
+    CARB_AG_VAR = var_n(carbPlot, n = CARB_AG_N, na.rm = TRUE),
+    CARB_AG_SE = sqrt(CARB_AG_VAR) / mean(carbPlot, na.rm = TRUE) * 100,
+
     AREA_TOTAL = sum(forArea, na.rm = TRUE), # acres/plot
-    AREA_VAR = var(forArea, na.rm = TRUE),
-    AREA_N = sum(forArea > 0, na.rm = TRUE)
+    AREA_N = sum(forArea > 0, na.rm = TRUE),
+    # AREA_VAR = var(forArea, na.rm = TRUE)
+    AREA_VAR = var_n(forArea, n = AREA_N, na.rm = TRUE),
+    AREA_SE = sqrt(AREA_VAR) / mean(forArea, na.rm = TRUE) * 100
   ) |>
   # the units work out to still be tons(live carbon)/acre(forested land) even if the variable names are misleading
   mutate(method = "forestTIME", carbon_per_area = CARB_AG_TOTAL / AREA_TOTAL) |>
@@ -197,9 +221,11 @@ agc_pop <- inner_join(tree_totals, area_totals) |>
     carbon_total = CARB_AG_TOTAL,
     carbon_total_var = CARB_AG_VAR,
     carbon_total_n = CARB_AG_N,
+    carbon_se = CARB_AG_SE,
     area_total = AREA_TOTAL,
     area_total_var = AREA_VAR,
-    area_n = AREA_N
+    area_n = AREA_N,
+    area_se = AREA_SE
   )
 agc_pop
 ```
