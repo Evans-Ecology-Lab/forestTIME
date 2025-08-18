@@ -105,6 +105,7 @@ tree1 <- trees_panel |>
   filter(tree == first(tree)) |>
   rename(ht_0 = ht)
 
+#TODO predict 10th year so we can compare to actual inventory year.
 for (i in 0:8) {
   #copy current loop's ht to `ht`
   tree1 <- tree1 |>
@@ -156,8 +157,7 @@ tree_sim <- left_join(tree_sim, original_data)
 #fill in NAs for variables like STATUSCD with midpoint switch interpolation
 
 tree_sim <- tree_sim |>
-  mutate(across(c(STATUSCD), step_interp))
-tree_sim
+  tree_sim
 ```
 
 Now you'd `adjust_mortality()` to take `MORTYR` into account (or not) and do all the correcting of values for whether a tree is alive, standing dead, or fallen.
