@@ -88,3 +88,31 @@ test_that("CONDPROP_UNADJ sums to ~1", {
     pull(cond_sum)
   expect_equal(cond_sums, rep(1, length(cond_sums)))
 })
+
+test_that("TPA_UNADJ is interpolated correctly", {
+  test_data <- structure(
+    list(
+      plot_ID = c("53_5_57_98830", "53_5_33_61941", "53_5_53_53463"),
+      tree_ID = c(
+        "53_5_57_98830_1_309",
+        "53_5_33_61941_2_158",
+        "53_5_53_53463_4_391"
+      ),
+      YEAR = c(2006, 2004, 2006),
+      DIA = c(3, 5.8, 35.5),
+      CULL = c(0, 0, 0),
+      PROP_BASIS = c("MACR", "MACR", "MACR"),
+      MACRO_BREAKPOINT_DIA = c(30L, 30L, 30L),
+      interpolated = c(FALSE, FALSE, FALSE),
+      CONDID = c(1, 1, 1),
+      COND_STATUS_CD = c(1, 1, 1),
+      CONDPROP_UNADJ = c(1, 1, 0.802895)
+    ),
+    row.names = c(NA, -3L),
+    class = c("tbl_df", "tbl", "data.frame")
+  )
+
+  data_interpolated <- interpolate_data(test_data) |> dplyr::arrange(DIA)
+
+  expect_equal(data_interpolated$TPA_UNADJ, c(74.965282, 6.018046, 0.999188))
+})
