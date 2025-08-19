@@ -22,7 +22,8 @@ test_that("variables with NAs get interpolated correctly", {
       STATUSCD,
       STANDING_DEAD_CD,
       DECAYCD,
-      DESIGNCD
+      PROP_BASIS,
+      MACRO_BREAKPOINT_DIA
     )
   data_interpolated <- data |>
     expand_data() |>
