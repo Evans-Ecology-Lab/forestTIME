@@ -159,7 +159,7 @@
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">fia_tidy</span>(db) <span class="co">#single tibble</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Wrangling data</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Wrangling data [388ms]</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Wrangling data [203ms]</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Expand to include all years between surveys and interpolate/extrapolate</span></span>
@@ -171,26 +171,24 @@
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Expanding years between surveys</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [4.3s]</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [2.3s]</span></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">24.2</span>s]</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">12.7</span>s]</span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">35.8</span>s]</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">18.6</span>s]</span>
 <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Prepping for estimating carbon</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>✔ Prepping <span class="cf">for</span> estimating carbon [<span class="dv">36</span>s]</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>✔ Prepping <span class="cf">for</span> estimating carbon [<span class="fl">18.9</span>s]</span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠙ Estimating carbon: prepping data</span></span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠹ Estimating carbon: finding merchantable height</span></span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠸ Estimating carbon: predicting merchantable stem wood volume</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠼ Estimating carbon: predicting merchantable stem wood and bark volume</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠴ Estimating carbon: finding sawlog height</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠦ Estimating carbon: predicting sawlog stem wood volume</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠧ Estimating carbon: predicting total stem bark weight</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠇ Estimating carbon: harmonizing components</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Estimating carbon: harmonizing components [28.5s]</span></span></code></pre></div>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠼ Estimating carbon: finding sawlog height</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠴ Estimating carbon: predicting sawlog stem wood volume</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠦ Estimating carbon: predicting total biomass</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Estimating carbon: harmonizing components [15.5s]</span></span></code></pre></div>
 </div>
 <p>I’ll add domain indicator columns as is done in the <code>rFIA</code> demystified vignette so we calculate carbon in live trees per area of forested land using base intensity plots only. Reason:</p>
 <blockquote>
@@ -269,7 +267,7 @@ We think these <code>EXPNS</code> values can be used much in the same way as the
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
-{"columns":[{"label":["method"],"name":[1],"type":["chr"],"align":["left"]},{"label":["YEAR"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["carbon_ton_acre"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["carbon_total"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["AREA_TOTAL"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"forestTIME","2":"2003","3":"34.53734","4":"5599810","5":"162137.8"},{"1":"forestTIME","2":"2004","3":"34.23811","4":"6212252","5":"181442.6"},{"1":"forestTIME","2":"2005","3":"33.00830","4":"5735161","5":"173749.1"},{"1":"forestTIME","2":"2006","3":"31.02213","4":"4868385","5":"156932.6"},{"1":"forestTIME","2":"2007","3":"30.91286","4":"4608059","5":"149066.1"},{"1":"forestTIME","2":"2008","3":"31.29413","4":"4712778","5":"150596.2"},{"1":"forestTIME","2":"2009","3":"32.45930","4":"4669147","5":"143846.2"},{"1":"forestTIME","2":"2010","3":"32.75127","4":"4983660","5":"152166.9"},{"1":"forestTIME","2":"2011","3":"33.15911","4":"5109157","5":"154080.0"},{"1":"forestTIME","2":"2012","3":"34.39447","4":"5166038","5":"150199.7"},{"1":"forestTIME","2":"2013","3":"34.75746","4":"5096778","5":"146638.4"},{"1":"forestTIME","2":"2014","3":"34.96977","4":"5111021","5":"146155.4"},{"1":"forestTIME","2":"2015","3":"34.92346","4":"5134074","5":"147009.3"},{"1":"forestTIME","2":"2016","3":"35.08612","4":"5220308","5":"148785.6"},{"1":"forestTIME","2":"2017","3":"33.65840","4":"4895579","5":"145449.0"},{"1":"forestTIME","2":"2018","3":"33.54516","4":"4495900","5":"134025.3"},{"1":"forestTIME","2":"2019","3":"34.72410","4":"4788756","5":"137908.7"},{"1":"forestTIME","2":"2020","3":"34.86392","4":"4755695","5":"136407.4"},{"1":"forestTIME","2":"2021","3":"33.61993","4":"4578244","5":"136176.5"},{"1":"forestTIME","2":"2022","3":"36.83680","4":"6381727","5":"173243.2"},{"1":"forestTIME","2":"2023","3":"38.07459","4":"7062477","5":"185490.6"},{"1":"forestTIME","2":"2024","3":"42.04380","4":"6976227","5":"165927.6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["method"],"name":[1],"type":["chr"],"align":["left"]},{"label":["YEAR"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["carbon_ton_acre"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["carbon_total"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["AREA_TOTAL"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"forestTIME","2":"2003","3":"34.53734","4":"11199621","5":"324275.7"},{"1":"forestTIME","2":"2004","3":"34.23811","4":"11803279","5":"344741.0"},{"1":"forestTIME","2":"2005","3":"33.00830","4":"10610049","5":"321435.8"},{"1":"forestTIME","2":"2006","3":"31.02213","4":"9146663","5":"294843.1"},{"1":"forestTIME","2":"2007","3":"30.91286","4":"8738245","5":"282673.5"},{"1":"forestTIME","2":"2008","3":"31.29413","4":"8901915","5":"284459.5"},{"1":"forestTIME","2":"2009","3":"32.45930","4":"8888673","5":"273840.6"},{"1":"forestTIME","2":"2010","3":"32.75127","4":"9454296","5":"288669.6"},{"1":"forestTIME","2":"2011","3":"33.15911","4":"9767506","5":"294564.8"},{"1":"forestTIME","2":"2012","3":"34.39447","4":"9876249","5":"287146.4"},{"1":"forestTIME","2":"2013","3":"34.75746","4":"9743841","5":"280338.1"},{"1":"forestTIME","2":"2014","3":"34.96977","4":"9771070","5":"279414.7"},{"1":"forestTIME","2":"2015","3":"34.92346","4":"9815142","5":"281047.2"},{"1":"forestTIME","2":"2016","3":"35.08612","4":"10056769","5":"286631.0"},{"1":"forestTIME","2":"2017","3":"33.65840","4":"9503182","5":"282342.1"},{"1":"forestTIME","2":"2018","3":"33.54516","4":"8826509","5":"263123.2"},{"1":"forestTIME","2":"2019","3":"34.72410","4":"9415181","5":"271142.6"},{"1":"forestTIME","2":"2020","3":"34.86392","4":"9415315","5":"270059.0"},{"1":"forestTIME","2":"2021","3":"33.61993","4":"9156489","5":"272353.0"},{"1":"forestTIME","2":"2022","3":"36.83680","4":"12550729","5":"340711.7"},{"1":"forestTIME","2":"2023","3":"38.07459","4":"14124953","5":"370981.1"},{"1":"forestTIME","2":"2024","3":"42.04380","4":"15890294","5":"377946.2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
