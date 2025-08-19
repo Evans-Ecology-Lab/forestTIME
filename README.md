@@ -12,7 +12,7 @@
 > It is **not** an official product of the US Forest Service. 
 
 
-This R package contains functions to create annualized versions of FIA data. It can download raw FIA data from DataMart, merge required tables, interpolate between surveys, and re-estimate biomass and carbon from interpolated values.  The output is a single dataframe with values for every tree in every year rather than the original panel design.
+This R package contains functions to create annualized versions of FIA data. It can download raw FIA data from DataMart, merge required tables, interpolate between surveys, and re-estimate biomass and carbon from interpolated values.  The output is a single dataframe with values for every tree in every year rather than the original panel design. Only base-intensity plots (`INTENSITY == 1`) are included.
 
 ## Installation
 
