@@ -34,8 +34,7 @@ fia_tidy <- function(db) {
       plot_ID,
       PLT_CN = CN,
       INVYR,
-      DESIGNCD, #for joining TPA_UNADJ based on rules later
-      # MACRO_BREAKPOINT_DIA #unclear if this is really needed
+      MACRO_BREAKPOINT_DIA, #for assigning TPA_UNADJ
       INTENSITY
     )
 
@@ -50,7 +49,7 @@ fia_tidy <- function(db) {
       INVYR,
       CONDID,
       CONDPROP_UNADJ,
-      PROP_BASIS,
+      PROP_BASIS, #for assigning TPA_UNADJ
       COND_STATUS_CD,
       STDORGCD
     )
@@ -83,13 +82,16 @@ fia_tidy <- function(db) {
   data <-
     COND |>
     dplyr::as_tibble() |>
-    dplyr::left_join(TREE, by = dplyr::join_by(plot_ID, PLT_CN, CONDID, INVYR)) |>
-    dplyr::left_join(PLOT, by = dplyr::join_by(plot_ID, PLT_CN, INVYR)) |> 
+    dplyr::left_join(
+      TREE,
+      by = dplyr::join_by(plot_ID, PLT_CN, CONDID, INVYR)
+    ) |>
+    dplyr::left_join(PLOT, by = dplyr::join_by(plot_ID, PLT_CN, INVYR)) |>
     dplyr::left_join(PLOTGEOM, by = dplyr::join_by(INVYR, PLT_CN))
 
   # use only base intensity plots
-  # data <- data |>
-  #   dplyr::filter(INTENSITY == 1)
+  data <- data |>
+    dplyr::filter(INTENSITY == 1)
 
   # fill MORTYR so it is a property of trees
   data <- data |>
@@ -131,7 +133,13 @@ fia_tidy <- function(db) {
     dplyr::full_join(
       data,
       all_plots,
-      by = dplyr::join_by(plot_ID, PLT_CN, INVYR, DESIGNCD, INTENSITY)
+      by = dplyr::join_by(
+        plot_ID,
+        PLT_CN,
+        INVYR,
+        MACRO_BREAKPOINT_DIA,
+        INTENSITY
+      )
     ) |>
     dplyr::arrange(plot_ID, tree_ID, INVYR) |>
     dplyr::select(plot_ID, tree_ID, INVYR, everything())

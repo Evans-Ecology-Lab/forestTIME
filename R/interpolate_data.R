@@ -42,7 +42,7 @@ interpolate_data <- function(data_expanded) {
     "DIA",
     "HT",
     "CULL",
-    "CR"#,
+    "CR" #,
     #  "CONDPROP_UNADJ" #this gets interpolated separately
   )
   #variables that switch at the midpoint (rounded down) between surveys
@@ -57,12 +57,11 @@ interpolate_data <- function(data_expanded) {
     "COND_STATUS_CD"
   )
 
-
   # Interpolate COND table separately to account for the number of conditions
   # (CONDIDs) changing from year to year
   # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64
   cond <- data_expanded |>
-    dplyr::filter(interpolated == FALSE) |> 
+    dplyr::filter(interpolated == FALSE) |>
     dplyr::group_by(plot_ID, YEAR, CONDID, COND_STATUS_CD) |>
     dplyr::filter(!is.na(CONDID)) |>
     dplyr::summarize(
@@ -120,7 +119,6 @@ interpolate_data <- function(data_expanded) {
       COND_STATUS_CD = step_interp(COND_STATUS_CD)
     )
 
-
   # interpolate the data
   data_interpolated <- data_expanded |>
     dplyr::group_by(plot_ID, tree_ID) |>
@@ -141,15 +139,15 @@ interpolate_data <- function(data_expanded) {
     dplyr::ungroup() |>
     # Cull only measured for trees with DIA >= 5
     dplyr::mutate(CULL = dplyr::if_else(DIA < 5, NA, CULL)) |>
-    #join TPA_UNADJ
-    dplyr::left_join(
-      tpa_rules,
-      by = dplyr::join_by(
-        DESIGNCD,
-        dplyr::between(DIA, min_DIA, max_DIA, bounds = "[)")
+    # Populate TPA_UNADJ based on PROP_BASIS and cutoffs
+    dplyr::mutate(
+      TPA_UNADJ = dplyr::case_when(
+        DIA >= 1 & DIA < 5 ~ 74.965282,
+        PROP_BASIS == "SUBP" & DIA >= 5 ~ 6.018046,
+        PROP_BASIS == "MACR" & DIA >= 5 & DIA < MACRO_BREAKPOINT_DIA ~ 6.018046,
+        PROP_BASIS == "MACR" & DIA >= MACRO_BREAKPOINT_DIA ~ 0.999188
       )
-    ) |>
-    dplyr::select(-min_DIA, -max_DIA)
+    )
 
   # merge the interpolated COND values back in
   data_adjusted_cond <- dplyr::full_join(
@@ -164,7 +162,7 @@ interpolate_data <- function(data_expanded) {
       #get STATECD out of plot_ID
       STATECD = as.numeric(stringr::str_extract(plot_ID, "\\d+(?=_)")),
       # .before = plot_ID
-    ) |> 
+    ) |>
     dplyr::left_join(
       state_areas |> dplyr::select(STATECD, state_land_area),
       by = dplyr::join_by(STATECD)
@@ -172,13 +170,13 @@ interpolate_data <- function(data_expanded) {
     dplyr::group_by(YEAR, STATECD) |>
     dplyr::mutate(
       EXPNS = state_land_area / length(unique(plot_ID))
-    ) |> 
+    ) |>
     dplyr::ungroup() |>
-    dplyr::select(-STATECD, -state_land_area) |> 
+    dplyr::select(-STATECD, -state_land_area) |>
     # Switch tree_ID for empty conditions back to NA
     dplyr::mutate(
       tree_ID = dplyr::if_else(stringr::str_starts(tree_ID, "NA_"), NA, tree_ID)
-    ) |> 
+    ) |>
     dplyr::arrange(plot_ID, tree_ID, YEAR, CONDID)
 
   # return:

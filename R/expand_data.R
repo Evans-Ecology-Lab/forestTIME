@@ -33,10 +33,12 @@ expand_data <- function(data) {
         "COND_STATUS_CD"
       )),
       \(x) dplyr::if_else(is.na(x) & !is.na(tree_ID), 999, x)
-    )) |> 
+    )) |>
     # replace NAs for CULL with 0s so they interpolate correctly
     # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/77)
-    dplyr::mutate(CULL = dplyr::if_else(is.na(CULL) & !is.na(tree_ID), 0, CULL)) |> 
+    dplyr::mutate(
+      CULL = dplyr::if_else(is.na(CULL) & !is.na(tree_ID), 0, CULL)
+    ) |>
     # Some rows are all NAs just to keep all CONDID x plot_ID combinations in
     # the data, but they interfere with interpolation because all tree_IDs of NA
     # get treated like the same tree. So we make them unique per CONDID and
@@ -66,15 +68,18 @@ expand_data <- function(data) {
     dplyr::arrange(tree_ID, YEAR) |>
     #fill down any time-invariant columns
     dplyr::group_by(plot_ID, tree_ID) |>
-    tidyr::fill(any_of(c(
-      "plot_ID",
-      "INTENSITY",
-      "SPCD",
-      "ECOSUBCD",
-      "DESIGNCD",
-      "PROP_BASIS",
-      "MORTYR"
-    )), .direction = "downup") |>
+    tidyr::fill(
+      any_of(c(
+        "plot_ID",
+        "INTENSITY",
+        "SPCD",
+        "ECOSUBCD",
+        "PROP_BASIS",
+        "MACRO_BREAKPOINT_DIA",
+        "MORTYR"
+      )),
+      .direction = "downup"
+    ) |>
     dplyr::ungroup() |>
     #rearrange
     dplyr::select(
