@@ -35,7 +35,8 @@ fia_tidy <- function(db) {
       PLT_CN = CN,
       INVYR,
       MACRO_BREAKPOINT_DIA, #for assigning TPA_UNADJ
-      INTENSITY
+      INTENSITY,
+      SUBCYCLE
     )
 
   COND <-
@@ -91,7 +92,7 @@ fia_tidy <- function(db) {
 
   # use only base intensity plots
   data <- data |>
-    dplyr::filter(INTENSITY == 1)
+    dplyr::filter(INTENSITY == 1 & SUBCYCLE != 0)
 
   # fill MORTYR so it is a property of trees
   data <- data |>

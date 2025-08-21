@@ -1,6 +1,6 @@
 # forestTIME.builder (development version)
 
-- `fia_tidy()` now only keeps base-intensity plots (`INTENSITY == 1`).
+- `fia_tidy()` now only keeps base-intensity plots (`INTENSITY == 1 & SUBCYCLE != 0`).
 - Fixed a bug that was causing `TPA_UNADJ` to not be populated for all trees in states that use macroplots ([#160](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/160)).
 - Fixed a bug in `fia_split_composite_ids()` that caused it to fail when `tree_ID` was `NA` (as it is in conditions with no observations). It now falls back on the information in `plot_ID` when `tree_ID` is in the data frame but `NA` ([#149](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/149)).
 - `fia_estimate()` now returns the additional variables `DRIBIO_FOLIAGE`, `VOLTSGRS`, and `VOLTSSND` in addition to `DRYBIO_AG` and `CARBON_AG`.
