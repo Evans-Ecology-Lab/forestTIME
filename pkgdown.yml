@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   forestTIME-builder: forestTIME-builder.html
   pop_scaling: pop_scaling.html
-last_built: 2025-08-19T17:39Z
+last_built: 2025-08-21T17:34Z
 urls:
   reference: https://evans-ecology-lab.github.io/forestTIME-builder/reference
   article: https://evans-ecology-lab.github.io/forestTIME-builder/articles
