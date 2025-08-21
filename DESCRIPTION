@@ -1,4 +1,4 @@
-Package: forestTIME.builder
+Package: forestTIME
 Title: Generate Annualized Carbon and Biomass Estimates From FIA Data
 Version: 2.0.0.9000
 Authors@R: c(
@@ -46,6 +46,6 @@ Suggests:
     waldo,
     withr
 VignetteBuilder: knitr, quarto
-URL: https://github.com/Evans-Ecology-Lab/forestTIME-builder https://cct-datascience.r-universe.dev/forestTIME.builder, https://evans-ecology-lab.github.io/forestTIME-builder/
+URL: https://github.com/Evans-Ecology-Lab/forestTIME-builder https://cct-datascience.r-universe.dev/forestTIME, https://evans-ecology-lab.github.io/forestTIME-builder/
 BugReports: https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues
 Config/testthat/edition: 3

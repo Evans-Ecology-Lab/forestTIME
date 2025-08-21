@@ -1,6 +1,6 @@
 library(rFIA)
 library(tidyverse)
-rfia_byplot <- rFIA::fiaRI |> 
+rfia_byplot <- rFIA::fiaRI |>
   biomass(
     totals = TRUE,
     method = "TI",
@@ -13,7 +13,7 @@ rfia_byplot <- rFIA::fiaRI |>
 
 db <- fia_load(
   "RI",
-  dir = system.file("exdata", package = "forestTIME.builder")
+  dir = system.file("exdata", package = "forestTIME")
 )
 data <- fia_tidy(db) #single tibble
 data_midpt <- data |>
@@ -21,14 +21,19 @@ data_midpt <- data |>
   fia_estimate()
 
 ft_plots <- data_midpt |>
-  filter(COND_STATUS_CD == 1 & INTENSITY == 1, STATUSCD == 1) |> 
-   pull(plot_ID) |> unique()
+  filter(COND_STATUS_CD == 1 & INTENSITY == 1, STATUSCD == 1) |>
+  pull(plot_ID) |>
+  unique()
 
-# rfia's pltID = 
+# rfia's pltID =
 # UNITCD_STATECD_COUNTYCD_PLOT
 
-rfia_byplot <- rfia_byplot |> 
-  separate_wider_delim(pltID, delim = "_", names = c("UNITCD", "STATECD", "COUNTYCD", "PLOT")) |> 
+rfia_byplot <- rfia_byplot |>
+  separate_wider_delim(
+    pltID,
+    delim = "_",
+    names = c("UNITCD", "STATECD", "COUNTYCD", "PLOT")
+  ) |>
   fia_add_composite_ids()
 
 rfia_plots <- rfia_byplot$plot_ID |> unique()

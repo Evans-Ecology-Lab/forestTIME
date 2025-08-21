@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(forestTIME.builder)
+library(forestTIME)
 
-test_check("forestTIME.builder")
+test_check("forestTIME")

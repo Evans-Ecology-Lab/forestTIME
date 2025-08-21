@@ -19,7 +19,7 @@ bibliography: references.bib
 
 ```{r}
 #| label: setup
-library(forestTIME.builder)
+library(forestTIME)
 library(dplyr)
 ```
 
@@ -69,7 +69,7 @@ names(db)
 #actually just read in the example data included in the package
 db <- fia_load(
   states = "DE",
-  dir = system.file("exdata", package = "forestTIME.builder")
+  dir = system.file("exdata", package = "forestTIME")
 )
 names(db)
 ```

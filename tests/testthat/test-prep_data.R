@@ -1,6 +1,6 @@
 library(dplyr)
 test_that("fia_tidy() works", {
-  fia_dir <- system.file("exdata", package = "forestTIME.builder")
+  fia_dir <- system.file("exdata", package = "forestTIME")
   # fia_download(states = "RI", download_dir = fia_dir, keep_zip = TRUE)
   db <- fia_load(states = "DE", dir = fia_dir)
   data <- fia_tidy(db)
@@ -17,4 +17,3 @@ test_that("fia_tidy() works", {
   spcd_check <- data |> group_by(tree_ID) |> filter(length(unique(SPCD)) > 1)
   expect_equal(nrow(spcd_check), 0)
 })
-
