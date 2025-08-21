@@ -27,6 +27,7 @@ data/rawdat/*
 data/db/*
 *.duckdb
 *.db
+*.parquet
 nohup.out
 .Rproj.user
 fia/
