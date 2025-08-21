@@ -40,7 +40,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="foresttimebuilder-development-version">forestTIME.builder (development version)<a class="anchor" aria-label="anchor" href="#foresttimebuilder-development-version"></a></h2>
 <ul><li>
-<code><a href="../reference/fia_tidy.html">fia_tidy()</a></code> now only keeps base-intensity plots (<code>INTENSITY == 1</code>).</li>
+<code><a href="../reference/fia_tidy.html">fia_tidy()</a></code> now only keeps base-intensity plots (<code>INTENSITY == 1 &amp; SUBCYCLE != 0</code>).</li>
 <li>Fixed a bug that was causing <code>TPA_UNADJ</code> to not be populated for all trees in states that use macroplots (<a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/160" class="external-link">#160</a>).</li>
 <li>Fixed a bug in <code><a href="../reference/fia_split_composite_ids.html">fia_split_composite_ids()</a></code> that caused it to fail when <code>tree_ID</code> was <code>NA</code> (as it is in conditions with no observations). It now falls back on the information in <code>plot_ID</code> when <code>tree_ID</code> is in the data frame but <code>NA</code> (<a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/149" class="external-link">#149</a>).</li>
 <li>
