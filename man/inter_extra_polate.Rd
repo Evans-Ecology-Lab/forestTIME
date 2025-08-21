@@ -20,7 +20,7 @@ a numeric vector
 }
 \description{
 Performs linear interpolation and, optionally, extrapolation of numeric
-vectors. In \code{forestTIME.builder}, Interpolation is used for annualizing tree
+vectors. In \code{forestTIME}, Interpolation is used for annualizing tree
 measurements such as \code{DIA}, \code{HT}, and \code{ACTUALHT}. Extrapolation is necessary
 for trees that are alive in one inventory, then fallen and dead with \code{NA}s in
 the next inventory, because we want to extrapolate their growth from the last

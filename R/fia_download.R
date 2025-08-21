@@ -43,8 +43,8 @@ tables_rfia <- c(
 #' @param states vector of state abbreviations; for all states use `state.abb`.
 #' @param download_dir where to save the zip files.
 #' @param extract which files to extract from the downloaded zip file—those
-#'   needed by `forestTIME.builder`, those needed by `rFIA` (which includes all
-#'   the tables `forestTIME.builder` needs), all the files, or none.
+#'   needed by `forestTIME`, those needed by `rFIA` (which includes all
+#'   the tables `forestTIME` needs), all the files, or none.
 #' @param keep_zip logical; keep the .zip file after CSVs are extracted?
 #' Defaults to `TRUE`.
 #'
@@ -54,11 +54,11 @@ tables_rfia <- c(
 #' \dontrun{
 #' # "Standard" download
 #' fia_download(states = c("RI", "DE"))
-#' 
+#'
 #' # Extract enough tables so it works with rFIA::readFIA() also
 #' fia_download(states = c("RI", "DE"), extract = "rFIA")
 #' }
-#' 
+#'
 fia_download <- function(
   states,
   download_dir = "fia",
@@ -87,7 +87,6 @@ fia_download <- function(
   out_paths <- fs::path(download_dir, files)
   urls <- utils::URLencode(paste0(base_url, files))
 
-
   #check if .csvs are there from a previous run with keep_zip = FALSE
 
   if (!extract %in% c("all", "none")) {
@@ -101,7 +100,7 @@ fia_download <- function(
     #can't reliably check if all CSVs are there when extract = "all"
     csv_check <- rep(FALSE, length(states)) |> purrr::set_names(states)
   }
-  
+
   # if no zip and not all CSVs, download zips
   need_dl <- !(zip_check | csv_check)
   if (any(need_dl)) {
@@ -148,15 +147,16 @@ fia_download <- function(
   } else if (extract %in% c("forestTIME", "rFIA") & all(csv_check)) {
     cli::cli_alert_warning("All CSVs already downloaded!")
     return(invisible(NULL))
-  } else if (extract %in% c("forestTIME", "rFIA") & any(!csv_check))
+  } else if (extract %in% c("forestTIME", "rFIA") & any(!csv_check)) {
     unzip_csvs(
       names(zip_check)[zip_check & !csv_check],
       dir = download_dir,
       keep_zip = keep_zip,
       tables = tables_needed
     )
-    return(invisible(NULL))
   }
+  return(invisible(NULL))
+}
 
 unzip_csvs <- function(zips, dir, keep_zip, tables = NULL) {
   cli::cli_alert_info("Extracting CSVs from .zip files")
@@ -179,4 +179,3 @@ unzip_csvs <- function(zips, dir, keep_zip, tables = NULL) {
   })
   return(invisible(TRUE))
 }
-

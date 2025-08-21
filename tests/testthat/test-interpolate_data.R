@@ -2,7 +2,7 @@ library(dplyr)
 test_that("variables with NAs get interpolated correctly", {
   db <- fia_load(
     "DE",
-    dir = system.file("exdata", package = "forestTIME.builder")
+    dir = system.file("exdata", package = "forestTIME")
   )
   data <- fia_tidy(db) |>
     dplyr::filter(tree_ID == "10_1_1_104_1_28") |>
@@ -39,7 +39,7 @@ test_that("variables with NAs get interpolated correctly", {
 test_that("interpolation of CULL is correct", {
   data <- fia_load(
     "DE",
-    dir = system.file("exdata", package = "forestTIME.builder")
+    dir = system.file("exdata", package = "forestTIME")
   ) |>
     fia_tidy() |>
     dplyr::filter(tree_ID == "10_1_1_128_1_24")
@@ -69,7 +69,7 @@ test_that("interpolation of CULL is correct", {
 test_that("CONDPROP_UNADJ sums to ~1", {
   data <- fia_load(
     "RI",
-    dir = system.file("exdata", package = "forestTIME.builder")
+    dir = system.file("exdata", package = "forestTIME")
   ) |>
     fia_tidy() |>
     dplyr::filter(INVYR %in% c(2009:2014))

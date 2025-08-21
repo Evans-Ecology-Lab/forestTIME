@@ -8,7 +8,7 @@
 <!-- badges: end -->
 
 > [!CAUTION]
-> `forestTIME.builder` is an **experimental** package and currently a **work-in-progress**. 
+> `forestTIME` is an **experimental** package and currently a **work-in-progress**. 
 > It is **not** an official product of the US Forest Service. 
 
 
@@ -16,12 +16,12 @@ This R package contains functions to create annualized versions of FIA data. It 
 
 ## Installation
 
-`forestTIME.builder` is not on CRAN.
+`forestTIME` is not on CRAN.
 
 To install from r-universe:
 
 ```r
-install.packages("forestTIME.builder", repos = c("https://cct-datascience.r-universe.dev", getOption("repos")))
+install.packages("forestTIME", repos = c("https://cct-datascience.r-universe.dev", getOption("repos")))
 ```
 
 To install from GitHub:
@@ -46,7 +46,7 @@ Eventually, this repository will contain a GitHub workflow to automate the inter
 To cite this work, please use:
 
 > Scott E.R., Diaz R., Steinberg D., Riemer K., Evans M. (2025).
-> “forestTIME.builder: Generate Annualized Carbon and Biomass Estimates From FIA
+> “forestTIME: Generate Annualized Carbon and Biomass Estimates From FIA
   Data” <https://github.com/Evans-Ecology-Lab/forestTIME-builder>.
 
 Please also cite Westfall et al. (2024):

@@ -72,7 +72,7 @@ I'll read in raw data for a few states, add our `tree_ID` and `plot_ID` composit
 #| label: setup
 #| include: false
 
-library(forestTIME.builder)
+library(forestTIME)
 library(tidyverse)
 library(rFIA)
 

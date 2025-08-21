@@ -2,7 +2,7 @@ library(dplyr)
 test_that("estimates match those in raw data", {
   db <- fia_load(
     "DE",
-    dir = system.file("exdata", package = "forestTIME.builder")
+    dir = system.file("exdata", package = "forestTIME")
   )
   orig <- db$TREE |>
     dplyr::filter(INVYR >= 2000L) |>
@@ -51,7 +51,7 @@ test_that("estimates match those in raw data", {
       )
   ) |>
     left_join(data_carbon |> filter(!is.na(tree_ID))) #ignore empty plots
-    
+
   expect_equal(test$CARBON_AG_est, test$CARBON_AG_orig, tolerance = 1e-3)
   expect_equal(test$DRYBIO_AG_est, test$DRYBIO_AG_orig, tolerance = 1e-3)
 })
