@@ -35,7 +35,8 @@ fia_tidy <- function(db) {
       PLT_CN = CN,
       INVYR,
       MACRO_BREAKPOINT_DIA, #for assigning TPA_UNADJ
-      INTENSITY
+      INTENSITY,
+      SUBCYCLE
     )
 
   COND <-
