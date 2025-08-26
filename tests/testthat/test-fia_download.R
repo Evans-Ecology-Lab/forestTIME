@@ -15,6 +15,7 @@ test_that("fia_download() works", {
 
 test_that("`extract = 'rFIA'` works", {
   skip_on_cran()
+
   path <- withr::local_tempdir()
   fia_download(states = "RI", download_dir = path, extract = "rFIA")
   x <- rFIA::readFIA(dir = path, states = "RI")
