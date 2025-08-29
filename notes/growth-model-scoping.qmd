@@ -1,0 +1,221 @@
+---
+title: "What would it take to do imputatino by growth simulation?"
+authors:
+    - Eric R. Scott
+format: html
+bibliography: references.bib
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(ggplot2)
+load_all()
+```
+
+1.  Training data
+2.  Fitted model object with `predict()` method or similar.
+3.  Pivoting data so model can efficiently `predict()` all next values and then re-pivoting
+4.  Apply midpoint interpolation for categorical variables
+5.  Then `adjust_mortality()` should "just work"
+
+## Training Data
+
+I'm going to use some data I previously simulated in `notes/simulation.qmd` for simplicity here, but the training data set could potentially be the FIADB itself as is apparently the case for the growth models described in @schultz2022.
+
+```{r}
+#simulated yearly data
+trees <- read_csv("notes/sim_trees.csv")
+
+#same data, but made into a panel design with 10 year remeasurment frequency
+trees_panel <- read_csv("notes/sim_trees_panel.csv") |>
+  select(-invyr) |>
+  mutate(STATUSCD = if_else(time >= mortyr, 2, 1))
+```
+
+## Fitted model object
+
+We'll need to fit a model that predicts *growth increment* based on current values that is, something of the form  $E(x_1 - x_0) = \beta_0 + \beta_1 x_0 + \epsilon$ where $x_0$ and $x_1$ are diameter, height, etc. at the current time point and the next time point, respectively.  Here I'll just use a linear model, but this probably will have other predictors like tree species and possibly ancillary data on climate or possibly a quadratic term $x_0^2$.
+
+First, we'll have to re-arrange the data a bit to get that growth increment.  I'll also randomly assign trees to one of three species just to simulate having a second predictor.
+
+```{r}
+trees_increments <- trees |>
+  group_by(tree) |>
+  arrange(time) |>
+  mutate(
+    ht_1 = lead(ht),
+    ht_increment = ht_1 - ht,
+    species = sample(c("oak", "pine", "spruce"), 1)
+  )
+
+m_ht <- lm(ht_increment ~ ht * I(ht^2) * species, data = trees_increments)
+```
+
+Ultimately it doesn't matter what the model is, as long as it has a `predict()` method that we can feed new data.  E.g., using it to predict the growth increment of an oak tree with height 10
+
+```{r}
+predict(m_ht, newdata = list(ht = 10, species = "oak"))
+```
+
+You can save the model out to disk as a .rds file at the end of a model fitting script and read it back in at the beginning of your simulation script (or include it in the `forestTIME.builder` R package as internal data). Also check out the [`butcher`](https://butcher.tidymodels.org) package for functions to shrink the size of model objects to improve efficiency.
+
+## Growth prediction
+
+```{r}
+trees_panel <- trees_panel |>
+  # add in species
+  left_join(trees_increments |> select(tree, species) |> distinct()) |>
+  arrange(tree, time)
+```
+
+Let's see what this would look like for a single tree first
+```{r}
+tree1 <- trees_panel |>
+  filter(tree == first(tree))
+```
+
+We would use every `ht` to predict the growth increment, then add it, then repeat 9 times.
+
+
+```{r}
+ht_increment <- predict(m_ht, newdata = tree1)
+tree1 <- tree1 |>
+  mutate(ht_1 = ht + ht_increment)
+ht_increment2 <- predict(m_ht, newdata = tree1 |> select(species, ht = ht_1))
+tree1 |>
+  mutate(ht_2 = ht_1 + ht_increment2)
+#and so on
+```
+
+This is obviously tedious, so we should use some kind of for-loop here. 
+
+::: {.callout-note}
+This is a situation that *actually* needs a for-loop and can't rely on `purrr::map()` or `lapply()` for efficiency since we need to use the results of the first iteration as input to the next iteration.
+:::
+
+
+```{r}
+tree1 <- trees_panel |>
+  filter(tree == first(tree)) |>
+  rename(ht_0 = ht)
+
+#TODO predict 10th year so we can compare to actual inventory year.
+for (i in 0:8) {
+  #copy current loop's ht to `ht`
+  tree1 <- tree1 |>
+    mutate(ht = .data[[paste0("ht_", i)]])
+  #caclulate next ht
+  tree1[[paste0("ht_", i + 1)]] <- predict(
+    m_ht,
+    newdata = tree1
+  ) +
+    tree1$ht
+}
+#clean up by removing `ht`
+tree1 <- tree1 |> select(-ht)
+tree1
+```
+
+
+## Wrangling predictions
+
+Now that we have a wide dataset with predictions, we need to pivot it in order to fill in ht values for each year
+
+```{r}
+tree_sim <- tree1 |>
+  pivot_longer(
+    cols = starts_with("ht_"),
+    names_to = "year_increment",
+    values_to = "ht",
+    names_prefix = "ht_" #removes the `ht_` part of the column names
+  ) |>
+  mutate(time = time + as.integer(year_increment))
+tree_sim
+```
+
+
+##  Interpolating other variables
+
+Notice that this automatically "fills down" variables like `tree`, `plot`, `species`, and `STATUSCD`, but we actually want the `STATUSCD` to switch at the midpoint.  So I would actually not include variables like these for the growth prediction and join it in after simulation.  Simulation essentially does the job of `expand_data()` by adding all the years between surveys for every tree.  Joining back to the original data will give you a dataset with filled-in columns for whatever variables you simulate (`HT`, `DIA`, `ACTUALHT`) and leave you with something that you can input into `interpolate_data()` and `adjust_mortality()`, possibly without modifications (I'll have to check on that).
+
+```{r}
+tree_sim <- tree_sim |>
+  select(-STATUSCD)
+
+original_data <- trees_panel |>
+  filter(tree == first(tree)) |>
+  select(tree, time, STATUSCD)
+
+tree_sim <- left_join(tree_sim, original_data)
+
+#fill in NAs for variables like STATUSCD with midpoint switch interpolation
+
+tree_sim <- tree_sim |>
+  tree_sim
+```
+
+Now you'd `adjust_mortality()` to take `MORTYR` into account (or not) and do all the correcting of values for whether a tree is alive, standing dead, or fallen.
+
+
+Let's plot the simulated and orignal together to see what happened.
+
+```{r}
+ggplot() +
+  geom_line(data = tree1, aes(x = time, y = ht_0, color = "panel data")) +
+  geom_line(
+    data = tree_sim,
+    aes(x = time, y = ht, color = "growth simulation")
+  ) +
+  labs(color = "data")
+```
+
+My linear model is obviously *very bad* at predicting tree growth (no surprise since I didn't use a linear model to generate the data), but even with a better model, the simulated line would be jagged because it will never prefectly predict the size at the next inventory.
+
+## With more than 1 tree
+
+The process for more than 1 tree is the same since the `predict()` method takes an entire dataset as long as you want each tree to be simulated out the same number of years.
+
+
+```{r}
+trees_full_sim <- trees_panel |> rename(ht_0 = ht)
+for (i in 0:8) {
+  # copy current loop's ht to `ht`
+  trees_full_sim <- trees_full_sim |>
+    mutate(ht = .data[[paste0("ht_", i)]])
+  # caclulate next ht
+  trees_full_sim[[paste0("ht_", i + 1)]] <- predict(
+    m_ht,
+    newdata = trees_full_sim
+  ) +
+    trees_full_sim$ht
+}
+#clean up by removing `ht`
+trees_full_sim <- trees_full_sim |> select(-ht)
+trees_full_sim
+```
+
+
+```{r}
+trees_full_sim <- trees_full_sim |>
+  pivot_longer(
+    cols = starts_with("ht_"),
+    names_to = "year_increment",
+    values_to = "ht",
+    names_prefix = "ht_" #removes the `ht_` part of the column names
+  ) |>
+  mutate(time = time + as.integer(year_increment))
+trees_full_sim
+```
+
+
+```{r}
+ggplot(trees_full_sim, aes(x = time, y = ht, color = species, group = tree)) +
+  geom_line() +
+  facet_wrap(vars(species))
+```

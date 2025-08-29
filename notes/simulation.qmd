@@ -149,6 +149,10 @@ ggplot(sim, aes(x = time, y = ht, color = as.factor(plot), group = tree)) +
   theme(legend.position = "none")
 ```
 
+```{r}
+readr::write_csv(sim, "notes/sim_trees.csv")
+```
+
 ## Simulate Panel Design
 
 Measure plots every 10 years, but in a way that the same number of plots are measured every year.
@@ -205,6 +209,10 @@ periodic <- periodic_expanded |>
   #remove non-inventory years
   filter(invyr)
 
+```
+
+```{r}
+readr::write_csv(periodic, "notes/sim_trees_panel.csv")
 ```
 
 ```{r}
