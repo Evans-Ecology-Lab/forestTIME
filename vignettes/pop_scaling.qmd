@@ -14,6 +14,7 @@ knitr:
   opts_chunk:
     collapse: true
     comment: '#>'
+bibliography: references.bib
 ---
 
 ```{r}
@@ -28,14 +29,13 @@ library(ggplot2)
 How can we use the interpolated data produced by `forestTIME.builder` to get popluation-level (i.e. state-level) per-area estimates?
 
 ::: callout-warning
-
 The interpolated values produced by `forestTIME.builder` are *inferences* and not samples, so it may not be appropriate to use (modified) design-based estimators, as we do in this vignette, which treat the data, including interpolated values, as a probablity sample.
-
 :::
 
 ## Example data
 
-We'll use RI as an example state because it is small. We'll just use the built-in example data that comes with `forestTIME.builder`, but if you were to download your own and you wanted to use it with `rFIA` also, make sure to set `extract = "rFIA"` to extract all the tables needed for both `forestTIME.builder` and `rFIA`.
+We'll use RI as an example state because it is small.
+We'll just use the built-in example data that comes with `forestTIME.builder`, but if you were to download your own and you wanted to use it with `rFIA` also, make sure to set `extract = "rFIA"` to extract all the tables needed for both `forestTIME.builder` and `rFIA`.
 
 ```{r}
 #| label: download-data
@@ -59,35 +59,34 @@ agc_rfia_annual <-
   biomass(
     rfia_RI,
     totals = TRUE,
+    variance = TRUE,
     method = "annual",
     treeType = "live",
     landType = 'forest',
     component = "AG",
     areaDomain = COND_STATUS_CD == 1 & INTENSITY == 1
   ) |>
-  mutate(method = "rFIA annual") |>
-  select(method, YEAR, carbon_ton_acre = CARB_ACRE, carbon_total = CARB_TOTAL)
+  mutate(method = "rFIA annual")
 
 agc_rfia_ti <-
   biomass(
     rfia_RI,
     totals = TRUE,
+    variance = TRUE,
     method = "TI",
     treeType = "live",
     landType = 'forest',
     component = "AG",
     areaDomain = COND_STATUS_CD == 1 & INTENSITY == 1
   ) |>
-  mutate(method = "rFIA TI") |>
-  select(method, YEAR, carbon_ton_acre = CARB_ACRE, carbon_total = CARB_TOTAL)
+  mutate(method = "rFIA TI")
 
-mean(agc_rfia_annual$carbon_ton_acre)
-mean(agc_rfia_ti$carbon_ton_acre)
+mean(agc_rfia_annual$CARB_ACRE)
+mean(agc_rfia_ti$CARB_ACRE)
 ```
-
 :::
 
-We'll use the standard basic workflow to get estimated aboveground carbon for each tree in each year.  
+We'll use the standard basic workflow to get estimated aboveground carbon for each tree in each year.
 
 ```{r}
 #| label: annualize-data
@@ -129,8 +128,8 @@ data_midpt <-
 ## Expansion factors
 
 The FIA data provides users with expansion factors, `EXPNS`, to aid in scaling estimates up to state levels.
-There are two issues in using these provided `EXPNS` with our annualized data: 1) it is not straightforward to join the tables in to get the `EXPNS` column, and 2) there are now many more plots in each year, so the `EXPNS` column is no longer accurate (it is the acres of the entire state represented by each plot). 
-Therefore, `fia_annualize()` re-calculates the `EXPNS` column as the total land area of the state divided by the number of plots in the interpolated data for that state in each year.  
+There are two issues in using these provided `EXPNS` with our annualized data: 1) it is not straightforward to join the tables in to get the `EXPNS` column, and 2) there are now many more plots in each year, so the `EXPNS` column is no longer accurate (it is the acres of the entire state represented by each plot).
+Therefore, `fia_annualize()` re-calculates the `EXPNS` column as the total land area of the state divided by the number of plots in the interpolated data for that state in each year.\
 We think these `EXPNS` values can be used much in the same way as the ones in the "raw" FIA database.
 
 ```{r}
@@ -148,6 +147,36 @@ You'll notice that the calculated `EXPNS` follow a "U" shape rather than being c
 That is because in our interpolated data, there are fewer plots in the beginning and end of the timeseries because we do not extrapolate beyond a panel's first and last inventory.
 
 Using these expansion factors, we can follow the methods in the [FIA demystified vignette](https://doserlab.com/files/rfia/articles/fiademystified#without-sampling-errors).
+
+::: callout-warning
+The variances calculated below are not *variance estimators* (in the sense that they are not "design-based"), they are just the traditional sample variance of a random variable.
+This may not be appropriate to "mix" with the mean and ratio estimators calculated below.
+
+E.g. the variance *estimator* for per-acre ratios (without post-stratification weights) is equation 4.17 in @bechtold2005 and equation 11 in @westfall2022 which is *not* the same as the formula the `var()` function uses to calculate [variance of a random variable](https://en.wikipedia.org/wiki/Variance):
+
+$$
+s^2 = \frac{1}{N-1}\sum_{i=1}^N(x_i - \bar{x})^2
+$$
+:::
+
+I'll create a version of `var()` that takes an `n` argument so we can take into account all the plots with 0s due to a 0 domain indicator.
+
+```{r}
+var_n <- function(x, n = length(x), na.rm = FALSE) {
+  if (na.rm) {
+    x = na.omit(x)
+  }
+  sum((x - mean(x))^2) / (n - 1)
+}
+```
+
+
+A note in `rFIA` about sampling error from `?biomass` (emphasis mine):
+
+>All sampling error estimates (SE) are returned as the "percent coefficient of variation" (standard deviation / mean * 100) for consistency with EVALIDator.
+>**IMPORTANT: sampling error cannot be used to construct confidence intervals.** 
+>Please use variance = TRUE for that (i.e., return variance and sample size instead of sampling error).
+
 
 ```{r}
 #| label: estimators
@@ -172,16 +201,31 @@ agc_pop <- inner_join(tree_totals, area_totals) |>
   group_by(YEAR) |>
   summarize(
     CARB_AG_TOTAL = sum(carbPlot, na.rm = TRUE), # tons/plot
-    AREA_TOTAL = sum(forArea, na.rm = TRUE) # acres/plot
+    CARB_AG_N = sum(carbPlot > 0, na.rm = TRUE),
+    # CARB_AG_VAR = var(carbPlot, na.rm = TRUE),
+    CARB_AG_VAR = var_n(carbPlot, n = CARB_AG_N, na.rm = TRUE),
+    CARB_AG_SE = sqrt(CARB_AG_VAR) / mean(carbPlot, na.rm = TRUE) * 100,
+
+    AREA_TOTAL = sum(forArea, na.rm = TRUE), # acres/plot
+    AREA_N = sum(forArea > 0, na.rm = TRUE),
+    # AREA_VAR = var(forArea, na.rm = TRUE)
+    AREA_VAR = var_n(forArea, n = AREA_N, na.rm = TRUE),
+    AREA_SE = sqrt(AREA_VAR) / mean(forArea, na.rm = TRUE) * 100
   ) |>
   # the units work out to still be tons(live carbon)/acre(forested land) even if the variable names are misleading
-  mutate(method = "forestTIME", carbon_ton_acre = CARB_AG_TOTAL / AREA_TOTAL) |>
+  mutate(method = "forestTIME", carbon_per_area = CARB_AG_TOTAL / AREA_TOTAL) |>
   select(
     method,
     YEAR,
-    carbon_ton_acre,
+    carbon_per_area,
     carbon_total = CARB_AG_TOTAL,
-    AREA_TOTAL
+    carbon_total_var = CARB_AG_VAR,
+    carbon_total_n = CARB_AG_N,
+    carbon_se = CARB_AG_SE,
+    area_total = AREA_TOTAL,
+    area_total_var = AREA_VAR,
+    area_n = AREA_N,
+    area_se = AREA_SE
   )
 agc_pop
 ```
@@ -189,14 +233,54 @@ agc_pop
 ```{r}
 #| label: plot-results
 
-all <- bind_rows(agc_rfia_annual, agc_rfia_ti, agc_pop)
+all <- bind_rows(
+  agc_rfia_annual |>
+    select(
+      method,
+      YEAR,
+      carbon_per_area = CARB_ACRE,
+      carbon_per_area_var = CARB_ACRE_VAR,
+      carbon_total = CARB_TOTAL,
+      carbon_total_var = CARB_TOTAL_VAR,
+      carbon_n = nPlots_TREE,
+      area_total = AREA_TOTAL,
+      area_total_var = AREA_TOTAL_VAR,
+      area_n = nPlots_AREA
+    ),
+  agc_rfia_ti |>
+    select(
+      method,
+      YEAR,
+      carbon_per_area = CARB_ACRE,
+      carbon_per_area_var = CARB_ACRE_VAR,
+      carbon_total = CARB_TOTAL,
+      carbon_total_var = CARB_TOTAL_VAR,
+      carbon_total_n = nPlots_TREE,
+      area_total = AREA_TOTAL,
+      area_total_var = AREA_TOTAL_VAR,
+      area_n = nPlots_AREA
+    ),
+  agc_pop
+)
 
 ggplot(all, aes(x = YEAR, y = carbon_total, color = method)) +
   geom_line() +
+  geom_ribbon(aes(
+    ymin = carbon_total - 1.96 * sqrt(carbon_total_var),
+    ymax = carbon_total + 1.96 * sqrt(carbon_total_var),
+    fill = method
+  ), color = NA, alpha = 0.4) +
   labs(y = "Total Carbon (tons)")
 
-ggplot(all, aes(x = YEAR, y = carbon_ton_acre, color = method)) +
+# NOTE: no CI for forestTIME method because it's not clear to me how to 
+# calculate variance of a ratio with just `var()`
+ggplot(all, aes(x = YEAR, y = carbon_per_area, color = method)) +
   geom_line() +
+  geom_ribbon(aes(
+    ymin = carbon_per_area - 1.96 * sqrt(carbon_per_area_var),
+    ymax = carbon_per_area + 1.96 * sqrt(carbon_per_area_var),
+    fill = method
+  ), color = NA, alpha = 0.4) +
   labs(y = "Mean Carbon/Acre (tons/acre)")
 
 ```
