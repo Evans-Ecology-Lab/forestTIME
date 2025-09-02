@@ -75,15 +75,15 @@
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"Evans-Ecology-Lab/forestTIME-builder"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="i-just-want-the-data">I just want the data!<a class="anchor" aria-label="anchor" href="#i-just-want-the-data"></a>
+</h2>
+<p>If you just want to download annualized FIA tables produced by <code>forestTIME.builder</code>, head over to the most recent <a href="https://github.com/Evans-Ecology-Lab/forestTIME-automation/releases/" class="external-link">release</a> on github.com/Evans-Ecology-Lab/forestTIME-automation to download parquet files. They can be read into R as dataframes with <code>nanoparquet</code>, for example.</p>
+</div>
+<div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>If you’d like to make modifications to the functions in this package, you are welcome to do so. However, it would be ideal if those modifications could be incorporated into this package to benefit everyone using it and to keep a single “source of truth” for this workflow.</p>
 <p>If you are brand new to R package development or using GitHub, I recommend you start by opening an issue to make a suggestion or report a bug. If you have some familiarity with R code and feel comfortable, feel free to make a pull request. I recommend using <code>usethis</code> to handle this process if you are not familiar with git and GitHub. Start by <a href="https://usethis.r-lib.org/articles/git-credentials.html" class="external-link">setting up your GitHub credentials</a> and then use <code>usethis::create_from_github("Evans-Ecology-Lab/forestTIME-builder")</code> to (possibly fork) and clone this repository. The <code>usethis</code> package has some <a href="https://usethis.r-lib.org/articles/pr-functions.html" class="external-link">nice documentation</a> on how to create pull requests using it’s <code>pr_*()</code> functions, namely <code>pr_init()</code> to create a new branch, <code>pr_push()</code> to actually open the pull request on GitHub, and <code>pr_finish()</code> to clean things up after yoru pull request is merged.</p>
-</div>
-<div class="section level2">
-<h2 id="automation">Automation<a class="anchor" aria-label="anchor" href="#automation"></a>
-</h2>
-<p>Eventually, this repository will contain a GitHub workflow to automate the interpolation and carbon estimation for all states and provide the resulting annualized dataset(s).</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
