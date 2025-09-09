@@ -13,7 +13,11 @@ adjust_mortality(data_interpolated, use_mortyr = TRUE)
 tree was dead?}
 }
 \value{
-a tibble
+a tibble with additional columns \code{MORTYR_eff}, which is \code{MORTYR} but
+adjusted forward a year in the case when the tree was alive in the recorded
+\code{MORTYR}, and \code{midpt_dead}, which is just the midpoint year (rounded down)
+between the inventory year when a tree was last observed a live and the
+inventory year it was first observed dead.
 }
 \description{
 This is an "internal" function—most users will want to run \code{\link[=fia_annualize]{fia_annualize()}}
