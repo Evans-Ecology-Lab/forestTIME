@@ -35,7 +35,8 @@ fia_tidy <- function(db) {
       PLT_CN = CN,
       INVYR,
       MACRO_BREAKPOINT_DIA, #for assigning TPA_UNADJ
-      INTENSITY
+      INTENSITY,
+      SUBCYCLE
     )
 
   COND <-
@@ -89,9 +90,11 @@ fia_tidy <- function(db) {
     dplyr::left_join(PLOT, by = dplyr::join_by(plot_ID, PLT_CN, INVYR)) |>
     dplyr::left_join(PLOTGEOM, by = dplyr::join_by(INVYR, PLT_CN))
 
-  # use only base intensity plots
+  # use only base intensity plots "Subcycle is 0 for a periodic inventory.
+  # Subcycle 99 may be used for plots that are not included in the estimation
+  # process." --FIADB user guide
   data <- data |>
-    dplyr::filter(INTENSITY == 1)
+    dplyr::filter(INTENSITY == 1 & SUBCYCLE != 0 & SUBCYCLE != 99)
 
   # fill MORTYR so it is a property of trees
   data <- data |>

@@ -43,7 +43,7 @@ tables_rfia <- c(
 #' @param states vector of state abbreviations; for all states use `state.abb`.
 #' @param download_dir where to save the zip files.
 #' @param extract which files to extract from the downloaded zip file—those
-#'   needed by `forestTIME`, those needed by `rFIA` (which includes all
+#'   needed by `forestTIME`, those needed by `rFIA` (in addition to all
 #'   the tables `forestTIME` needs), all the files, or none.
 #' @param keep_zip logical; keep the .zip file after CSVs are extracted?
 #' Defaults to `TRUE`.
@@ -69,7 +69,7 @@ fia_download <- function(
   tables_needed <- switch(
     extract,
     "forestTIME" = tables_ft,
-    "rFIA" = tables_rfia
+    "rFIA" = unique(c(tables_rfia, tables_ft))
   )
 
   states <- match.arg(states, datasets::state.abb, several.ok = TRUE)

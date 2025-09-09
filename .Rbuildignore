@@ -18,3 +18,5 @@
 ^carbon_code$
 ^_pkgdown\.yml$
 ^pkgdown$
+^notes$
+^air.toml$
