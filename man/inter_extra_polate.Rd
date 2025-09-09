@@ -7,7 +7,7 @@
 inter_extra_polate(x, y, extrapolate = TRUE)
 }
 \arguments{
-\item{x}{numeric; an x variable, usually \code{YEAR} in forestTIME-builder}
+\item{x}{numeric; an x variable, usually \code{YEAR} in \code{forestTIME}}
 
 \item{y}{numeric; the variable to be interpolated/extrapolated}
 

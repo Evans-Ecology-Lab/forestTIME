@@ -9,7 +9,7 @@
 #' of vectors with only one non-NA value, that value is carried forward if
 #' `extrapolate = TRUE`.
 #'
-#' @param x numeric; an x variable, usually `YEAR` in forestTIME-builder
+#' @param x numeric; an x variable, usually `YEAR` in `forestTIME`
 #' @param y numeric; the variable to be interpolated/extrapolated
 #' @param extrapolate logical; perform extrapolation if possible?
 #' @returns numeric vector

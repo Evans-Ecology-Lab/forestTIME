@@ -1,5 +1,5 @@
 ---
-title: "forestTIME-builder"
+title: "forestTIME"
 vignette: >
   %\VignetteIndexEntry{Basic workflow}
   %\VignetteEngine{quarto::html}

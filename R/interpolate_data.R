@@ -59,7 +59,7 @@ interpolate_data <- function(data_expanded) {
 
   # Interpolate COND table separately to account for the number of conditions
   # (CONDIDs) changing from year to year
-  # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64
+  # https://github.com/Evans-Ecology-Lab/forestTIME/issues/64
   cond <- data_expanded |>
     dplyr::filter(interpolated == FALSE) |>
     dplyr::group_by(plot_ID, YEAR, CONDID, COND_STATUS_CD) |>

@@ -233,13 +233,13 @@ It also seems like it would be challenging to get simulated data to "connect up"
 
 ## Getting "expanded" FIA data to work with
 
-Below is a basic workflow to get the "expanded" data with missing values for every year including non-survey years as described in more detail in the [`forestTIME` vignette](https://cct-datascience.r-universe.dev/articles/forestTIME/forestTIME-builder.html).
+Below is a basic workflow to get the "expanded" data with missing values for every year including non-survey years as described in more detail in the [`forestTIME` vignette](https://evans-ecology-lab.github.io/forestTIME/articles/forestTIME.html).
 
 ```{r}
 #| eval: false
 
 # Install the most recent version of forestTIME from GitHub:
-# pak::pak("Evans-Ecology-Lab/forestTIME-builder")
+# pak::pak("Evans-Ecology-Lab/forestTIME")
 library(forestTIME)
 # Download data
 fia_download(
