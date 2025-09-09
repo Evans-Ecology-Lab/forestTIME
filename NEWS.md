@@ -1,4 +1,4 @@
-# forestTIME (development version)
+# forestTIME 2.1.0
 
 
 - This package has been re-named from `forestTIME.builder` to `forestTIME`
