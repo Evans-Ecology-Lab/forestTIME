@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Population scaling • forestTIME.builder</title>
+<title>Population scaling • forestTIME</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -21,7 +21,7 @@
 
     <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <a class="navbar-brand me-2" href="../index.html">forestTIME.builder</a>
+    <a class="navbar-brand me-2" href="../index.html">forestTIME</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0.9000</small>
 
@@ -32,12 +32,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/forestTIME-builder.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/pop_scaling.html">Population scaling</a></li>
+<li><a class="dropdown-item" href="../articles/forestTIME-builder.html">forestTIME</a></li>
+    <li><a class="dropdown-item" href="../articles/pop_scaling.html">Population scaling</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -46,7 +46,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/Evans-Ecology-Lab/forestTIME/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -61,7 +61,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/blob/main/vignettes/pop_scaling.qmd" class="external-link"><code>vignettes/pop_scaling.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Evans-Ecology-Lab/forestTIME/blob/main/vignettes/pop_scaling.qmd" class="external-link"><code>vignettes/pop_scaling.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -72,9 +72,9 @@
 
     <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder" class="external-link">forestTIME.builder</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; ! forestTIME.builder is an experimental package and currently a</span></span>
-<span><span class="co">#&gt;   work-in-progress. It is not an official product of the US Forest Service.</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Evans-Ecology-Lab/forestTIME" class="external-link">forestTIME</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; ! forestTIME is an experimental package and currently a work-in-progress. It is</span></span>
+<span><span class="co">#&gt;   not an official product of the US Forest Service.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
@@ -89,16 +89,16 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/doserjef/rFIA" class="external-link">rFIA</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 </div>
-<p>How can we use the interpolated data produced by <code>forestTIME.builder</code> to get popluation-level (i.e. state-level) per-area estimates?</p>
+<p>How can we use the interpolated data produced by <code>forestTIME</code> to get popluation-level (i.e. state-level) per-area estimates?</p>
 <div>
 <blockquote>
 <p><strong>Warning</strong></p>
-<p>The interpolated values produced by <code>forestTIME.builder</code> are <em>inferences</em> and not samples, so it may not be appropriate to use (modified) design-based estimators, as we do in this vignette, which treat the data, including interpolated values, as a probablity sample.</p>
+<p>The interpolated values produced by <code>forestTIME</code> are <em>inferences</em> and not samples, so it may not be appropriate to use (modified) design-based estimators, as we do in this vignette, which treat the data, including interpolated values, as a probablity sample.</p>
 </blockquote>
 </div>
 <section class="level2"><h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a>
 </h2>
-<p>We’ll use RI as an example state because it is small. We’ll just use the built-in example data that comes with <code>forestTIME.builder</code>, but if you were to download your own and you wanted to use it with <code>rFIA</code> also, make sure to set <code>extract = "rFIA"</code> to extract all the tables needed for both <code>forestTIME.builder</code> and <code>rFIA</code>.</p>
+<p>We’ll use RI as an example state because it is small. We’ll just use the built-in example data that comes with <code>forestTIME</code>, but if you were to download your own and you wanted to use it with <code>rFIA</code> also, make sure to set <code>extract = "rFIA"</code> to extract all the tables needed for both <code>forestTIME</code> and <code>rFIA</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fia_download.html">fia_download</a></span><span class="op">(</span>states <span class="op">=</span> <span class="st">"RI"</span>, download_dir <span class="op">=</span> <span class="st">"fia"</span>, extract <span class="op">=</span> <span class="st">"rFIA"</span><span class="op">)</span></span></code></pre></div>
@@ -110,7 +110,7 @@
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rfia_RI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://www.doserlab.com/files/rFIA/reference/readFIA.html" class="external-link">readFIA</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"exdata"</span>, package <span class="op">=</span> <span class="st">"forestTIME.builder"</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"exdata"</span>, package <span class="op">=</span> <span class="st">"forestTIME"</span><span class="op">)</span>,</span>
 <span>  states <span class="op">=</span> <span class="st">"RI"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -155,11 +155,11 @@
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data prep</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>db <span class="ot">&lt;-</span> <span class="fu">fia_load</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"RI"</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">dir =</span> <span class="fu">system.file</span>(<span class="st">"exdata"</span>, <span class="at">package =</span> <span class="st">"forestTIME.builder"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">dir =</span> <span class="fu">system.file</span>(<span class="st">"exdata"</span>, <span class="at">package =</span> <span class="st">"forestTIME"</span>)</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">fia_tidy</span>(db) <span class="co">#single tibble</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Wrangling data</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Wrangling data [176ms]</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Wrangling data [170ms]</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Expand to include all years between surveys and interpolate/extrapolate</span></span>
@@ -174,19 +174,19 @@
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [2.2s]</span></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">12.5</span>s]</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">12.2</span>s]</span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">18.5</span>s]</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="dv">18</span>s]</span>
 <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Prepping for estimating carbon</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>✔ Prepping <span class="cf">for</span> estimating carbon [<span class="fl">18.6</span>s]</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>✔ Prepping <span class="cf">for</span> estimating carbon [<span class="fl">18.1</span>s]</span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠙ Estimating carbon: prepping data</span></span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠹ Estimating carbon: predicting merchantable stem wood volume</span></span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠸ Estimating carbon: predicting sawlog stem wood volume</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠼ Estimating carbon: predicting total stem bark weight</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Estimating carbon: harmonizing components [15.2s]</span></span></code></pre></div>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠼ Estimating carbon: predicting foliage weight</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Estimating carbon: harmonizing components [14.8s]</span></span></code></pre></div>
 </div>
 <p>I’ll add domain indicator columns as is done in the <code>rFIA</code> demystified vignette so we calculate carbon in live trees per area of forested land using base intensity plots only. Reason:</p>
 <blockquote>

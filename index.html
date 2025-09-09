@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Generate Annualized Carbon and Biomass Estimates From FIA Data • forestTIME.builder</title>
+<title>Generate Annualized Carbon and Biomass Estimates From FIA Data • forestTIME</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
 
     <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <a class="navbar-brand me-2" href="index.html">forestTIME.builder</a>
+    <a class="navbar-brand me-2" href="index.html">forestTIME</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0.9000</small>
 
@@ -31,12 +31,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="articles/forestTIME-builder.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/pop_scaling.html">Population scaling</a></li>
+<li><a class="dropdown-item" href="articles/forestTIME-builder.html">forestTIME</a></li>
+    <li><a class="dropdown-item" href="articles/pop_scaling.html">Population scaling</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -45,7 +45,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/Evans-Ecology-Lab/forestTIME/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -54,25 +54,25 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="foresttime-builder">forestTIME-builder<a class="anchor" aria-label="anchor" href="#foresttime-builder"></a>
+<div class="page-header"><h1 id="foresttime">forestTIME<a class="anchor" aria-label="anchor" href="#foresttime"></a>
 </h1></div>
 <!-- badges: start -->
 
 <blockquote>
-<p>[!CAUTION] <code>forestTIME.builder</code> is an <strong>experimental</strong> package and currently a <strong>work-in-progress</strong>. It is <strong>not</strong> an official product of the US Forest Service.</p>
+<p>[!CAUTION] <code>forestTIME</code> is an <strong>experimental</strong> package and currently a <strong>work-in-progress</strong>. It is <strong>not</strong> an official product of the US Forest Service.</p>
 </blockquote>
 <p>This R package contains functions to create annualized versions of FIA data. It can download raw FIA data from DataMart, merge required tables, interpolate between surveys, and re-estimate biomass and carbon from interpolated values. The output is a single dataframe with values for every tree in every year rather than the original panel design. Only base-intensity plots (<code>INTENSITY == 1</code>) are included.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>forestTIME.builder</code> is not on CRAN.</p>
+<p><code>forestTIME</code> is not on CRAN.</p>
 <p>To install from r-universe:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"forestTIME.builder"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://cct-datascience.r-universe.dev"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"forestTIME"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://cct-datascience.r-universe.dev"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>To install from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"Evans-Ecology-Lab/forestTIME-builder"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"Evans-Ecology-Lab/forestTIME"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="i-just-want-the-data">I just want the data!<a class="anchor" aria-label="anchor" href="#i-just-want-the-data"></a>
@@ -83,14 +83,14 @@
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>If you’d like to make modifications to the functions in this package, you are welcome to do so. However, it would be ideal if those modifications could be incorporated into this package to benefit everyone using it and to keep a single “source of truth” for this workflow.</p>
-<p>If you are brand new to R package development or using GitHub, I recommend you start by opening an issue to make a suggestion or report a bug. If you have some familiarity with R code and feel comfortable, feel free to make a pull request. I recommend using <code>usethis</code> to handle this process if you are not familiar with git and GitHub. Start by <a href="https://usethis.r-lib.org/articles/git-credentials.html" class="external-link">setting up your GitHub credentials</a> and then use <code>usethis::create_from_github("Evans-Ecology-Lab/forestTIME-builder")</code> to (possibly fork) and clone this repository. The <code>usethis</code> package has some <a href="https://usethis.r-lib.org/articles/pr-functions.html" class="external-link">nice documentation</a> on how to create pull requests using it’s <code>pr_*()</code> functions, namely <code>pr_init()</code> to create a new branch, <code>pr_push()</code> to actually open the pull request on GitHub, and <code>pr_finish()</code> to clean things up after yoru pull request is merged.</p>
+<p>If you are brand new to R package development or using GitHub, I recommend you start by opening an issue to make a suggestion or report a bug. If you have some familiarity with R code and feel comfortable, feel free to make a pull request. I recommend using <code>usethis</code> to handle this process if you are not familiar with git and GitHub. Start by <a href="https://usethis.r-lib.org/articles/git-credentials.html" class="external-link">setting up your GitHub credentials</a> and then use <code>usethis::create_from_github("Evans-Ecology-Lab/forestTIME")</code> to (possibly fork) and clone this repository. The <code>usethis</code> package has some <a href="https://usethis.r-lib.org/articles/pr-functions.html" class="external-link">nice documentation</a> on how to create pull requests using it’s <code>pr_*()</code> functions, namely <code>pr_init()</code> to create a new branch, <code>pr_push()</code> to actually open the pull request on GitHub, and <code>pr_finish()</code> to clean things up after yoru pull request is merged.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>To cite this work, please use:</p>
 <blockquote>
-<p>Scott E.R., Diaz R., Steinberg D., Riemer K., Evans M. (2025). “forestTIME.builder: Generate Annualized Carbon and Biomass Estimates From FIA Data” <a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder" class="external-link uri">https://github.com/Evans-Ecology-Lab/forestTIME-builder</a>.</p>
+<p>Scott E.R., Diaz R., Steinberg D., Riemer K., Evans M. (2025). “forestTIME: Generate Annualized Carbon and Biomass Estimates From FIA Data” <a href="https://github.com/Evans-Ecology-Lab/forestTIME" class="external-link uri">https://github.com/Evans-Ecology-Lab/forestTIME</a>.</p>
 </blockquote>
 <p>Please also cite Westfall et al. (2024):</p>
 <blockquote>
@@ -103,8 +103,8 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/Evans-Ecology-Lab/forestTIME/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/Evans-Ecology-Lab/forestTIME/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -120,7 +120,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing forestTIME.builder</a></li>
+<li><a href="authors.html#citation">Citing forestTIME</a></li>
 </ul>
 </div>
 
@@ -137,8 +137,8 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.repostatus.org/#wip" class="external-link"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
-<li><a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/actions/workflows/run_workflow.yml" class="external-link"><img src="https://github.com/Evans-Ecology-Lab/forestTIME-builder/actions/workflows/run_workflow.yml/badge.svg?branch=main" alt="run_workflow.yml"></a></li>
-<li><a href="https://github.com/Evans-Ecology-Lab/forestTIME-builder/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/Evans-Ecology-Lab/forestTIME-builder/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/Evans-Ecology-Lab/forestTIME/actions/workflows/run_workflow.yml" class="external-link"><img src="https://github.com/Evans-Ecology-Lab/forestTIME/actions/workflows/run_workflow.yml/badge.svg?branch=main" alt="run_workflow.yml"></a></li>
+<li><a href="https://github.com/Evans-Ecology-Lab/forestTIME/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/Evans-Ecology-Lab/forestTIME/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 
