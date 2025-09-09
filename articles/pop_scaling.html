@@ -61,7 +61,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/Evans-Ecology-Lab/forestTIME/blob/main/vignettes/pop_scaling.qmd" class="external-link"><code>vignettes/pop_scaling.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Evans-Ecology-Lab/forestTIME/blob/v2.1.0/vignettes/pop_scaling.qmd" class="external-link"><code>vignettes/pop_scaling.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -159,7 +159,7 @@
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">fia_tidy</span>(db) <span class="co">#single tibble</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Wrangling data</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Wrangling data [176ms]</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Wrangling data [178ms]</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Expand to include all years between surveys and interpolate/extrapolate</span></span>
@@ -171,22 +171,24 @@
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Expanding years between surveys</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [2.2s]</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [2.3s]</span></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">12.7</span>s]</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">12.9</span>s]</span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">18.7</span>s]</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">19.1</span>s]</span>
 <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Prepping for estimating carbon</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>✔ Prepping <span class="cf">for</span> estimating carbon [<span class="fl">18.8</span>s]</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>✔ Prepping <span class="cf">for</span> estimating carbon [<span class="fl">19.2</span>s]</span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠙ Estimating carbon: prepping data</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠹ Estimating carbon: predicting merchantable stem wood volume</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠸ Estimating carbon: predicting sawlog stem wood volume</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠼ Estimating carbon: predicting total biomass</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Estimating carbon: harmonizing components [15.2s]</span></span></code></pre></div>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠹ Estimating carbon: finding merchantable height</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠸ Estimating carbon: predicting merchantable stem wood volume</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠼ Estimating carbon: predicting stump wood and bark volume</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠴ Estimating carbon: predicting sawlog stem wood volume</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ⠦ Estimating carbon: predicting sawlog stem wood and bark volume</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Estimating carbon: harmonizing components [15.8s]</span></span></code></pre></div>
 </div>
 <p>I’ll add domain indicator columns as is done in the <code>rFIA</code> demystified vignette so we calculate carbon in live trees per area of forested land using base intensity plots only. Reason:</p>
 <blockquote>
