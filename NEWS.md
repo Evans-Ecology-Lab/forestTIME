@@ -1,5 +1,6 @@
 # forestTIME.builder (development version)
 
+- The results of `fia_annualize()` now include a `midpt_dead` column which is the year a tree is estimated to be dead when `MORTYR` is not used.  If `use_mortyr = TRUE` it *also* includes a `MORTYR_eff` ("effective MORTYR") column, which is usually `MORTYR` except when a tree is alive in the recorded `MORTYR`, in which case it is `MORTYR` + 1
 - `fia_tidy()` now only keeps base-intensity plots (`INTENSITY == 1 & SUBCYCLE != 0 & SUBCYCLE != 99`).
 - Fixed a bug that was causing `TPA_UNADJ` to not be populated for all trees in states that use macroplots ([#160](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/160)).
 - Fixed a bug in `fia_split_composite_ids()` that caused it to fail when `tree_ID` was `NA` (as it is in conditions with no observations). It now falls back on the information in `plot_ID` when `tree_ID` is in the data frame but `NA` ([#149](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/149)).

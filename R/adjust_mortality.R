@@ -20,7 +20,11 @@
 #'   tree was dead?
 #' @export
 #' @keywords internal
-#' @returns a tibble
+#' @returns a tibble with additional columns `MORTYR_eff`, which is `MORTYR` but
+#'   adjusted forward a year in the case when the tree was alive in the recorded
+#'   `MORTYR`, and `midpt_dead`, which is just the midpoint year (rounded down)
+#'   between the inventory year when a tree was last observed a live and the
+#'   inventory year it was first observed dead.
 adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
   cli::cli_progress_step("Adjusting for mortality")
 
@@ -63,37 +67,43 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
       dplyr::mutate(
         # STATUSCD is interpolated to the midpoint between surveys
         # see utils.R for more info on what %|||% does
-        first_dead = YEAR[min(which(STATUSCD == 2) %|||% NA)]
+        midpt_dead = YEAR[min(which(STATUSCD == 2) %|||% NA)]
       ) |>
       # When a tree has a recorded MORTYR, adjust STATUSCD depending on whether
-      # MORTYR is before or after the midpoint (first_dead). This works because
+      # MORTYR is before or after the midpoint (midpt_dead). This works because
       # MORTYR is filled in for every row of a tree by fia_tidy() and
       # expand_data(). Can't assume tree has STATUSCD 2 after MORTYR since
       # sometimes STATUSCD goes from 1 to 2 to 0.
       dplyr::mutate(
         STATUSCD = dplyr::case_when(
           is.na(MORTYR_eff) ~ STATUSCD, #do nothing
-          MORTYR_eff == first_dead ~ STATUSCD, #do nothing
+          MORTYR_eff == midpt_dead ~ STATUSCD, #do nothing
 
           # if MORTYR is earlier than midpoint and the year is between the
           # MORTYR and the midpoint, adjust STATUSCD to 2
-          MORTYR_eff < first_dead & YEAR >= MORTYR_eff & YEAR < first_dead ~ 2,
+          MORTYR_eff < midpt_dead & YEAR >= MORTYR_eff & YEAR < midpt_dead ~ 2,
 
           # if MORTYR is after the midpoint and the year is between the midpoint
           # and MORTYR, adjust STATUSCD to 1
-          MORTYR_eff > first_dead & YEAR < MORTYR_eff & YEAR >= first_dead ~ 1,
+          MORTYR_eff > midpt_dead & YEAR < MORTYR_eff & YEAR >= midpt_dead ~ 1,
           .default = STATUSCD
         )
       ) |>
       # MORTYR might be earlier than the midpoint, so backfill NAs for DECAYCD
       # and STANDING_DEAD_CD. These will be corrected later anyways
       tidyr::fill(DECAYCD, STANDING_DEAD_CD, .direction = "up") |>
-      dplyr::select(-first_dead, -MORTYR_eff)
+      # dplyr::select(-midpt_dead, -MORTYR_eff)
+      dplyr::relocate(MORTYR_eff, midpt_dead, .after = MORTYR)
   } else {
-    df <- data_interpolated |> dplyr::group_by(tree_ID)
+    df <- data_interpolated |>
+      dplyr::group_by(tree_ID) |>
+      dplyr::mutate(
+        midpt_dead = YEAR[min(which(STATUSCD == 2) %|||% NA)],
+        .after = MORTYR
+      )
   }
 
-# If trees are interpolated to below FIA thresholds for being measured, set
+  # If trees are interpolated to below FIA thresholds for being measured, set
   # them to fallen dead. For most trees, this is DIA < 1 and ACTUALHT < 4.5.
   # For woodland species, the ACTUALHT threshold is 1. To figure out if a tree
   # is a woodland species, we need to pull in one of the ref tables
@@ -107,7 +117,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
     )
 
   data_adjusted <- df |>
-    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |> 
+    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |>
     # TODO: Is there a way of only having to do the case_when once?  E.g. would
     # it be faster to create a column "dead_fallen" and then in a subsequent
     # step use dead_fallen to set STATUSCD and STANDING_DEAD_CD? this function
@@ -123,7 +133,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
         JENKINS_SPGRPCD == 10 & (DIA < 1 | HT < 1 | ACTUALHT < 1) ~ 0,
         .default = STANDING_DEAD_CD
       )
-    ) |> 
+    ) |>
     dplyr::select(-JENKINS_SPGRPCD)
 
   data_adjusted |>
@@ -149,7 +159,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
     dplyr::mutate(
       dplyr::across(
         c(DIA, HT, ACTUALHT, CULL, CR),
-        \(x)
+        \(x) {
           dplyr::if_else(
             (STATUSCD == 0 & RECONCILECD %in% c(5, 6, 9)) |
               (COND_STATUS_CD != 1),
@@ -157,6 +167,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
             x,
             missing = x
           )
+        }
       )
     ) |>
     dplyr::ungroup()

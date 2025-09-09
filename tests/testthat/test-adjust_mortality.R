@@ -186,6 +186,19 @@ test_that("MORTYR gets nudged to next year if tree is alive", {
       pull(STATUSCD),
     2
   )
+
+  expect_equal(
+    data_adj |>
+      filter(tree_ID == "8_1_119_80086_3_12") |>
+      pull(MORTYR_eff) |>
+      unique(),
+    data_adj |>
+      filter(tree_ID == "8_1_119_80086_3_12") |>
+      pull(MORTYR) |>
+      unique() +
+      1
+  )
+
   expect_equal(
     data_adj |>
       filter(
