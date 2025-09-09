@@ -1,7 +1,7 @@
 #' Linear intrpolation and extrapolation
 #'
 #' Performs linear interpolation and, optionally, extrapolation of numeric
-#' vectors. In `forestTIME.builder`, Interpolation is used for annualizing tree
+#' vectors. In `forestTIME`, Interpolation is used for annualizing tree
 #' measurements such as `DIA`, `HT`, and `ACTUALHT`. Extrapolation is necessary
 #' for trees that are alive in one inventory, then fallen and dead with `NA`s in
 #' the next inventory, because we want to extrapolate their growth from the last
@@ -9,7 +9,7 @@
 #' of vectors with only one non-NA value, that value is carried forward if
 #' `extrapolate = TRUE`.
 #'
-#' @param x numeric; an x variable, usually `YEAR` in forestTIME-builder
+#' @param x numeric; an x variable, usually `YEAR` in `forestTIME`
 #' @param y numeric; the variable to be interpolated/extrapolated
 #' @param extrapolate logical; perform extrapolation if possible?
 #' @returns numeric vector
@@ -27,7 +27,7 @@
 #' #single numbers get carried forward
 #' y2 <- c(NA, NA, 3, NA, NA)
 #' inter_extra_polate(x = x, y = y2, extrapolate = TRUE)
-#' 
+#'
 inter_extra_polate <- function(x, y, extrapolate = TRUE) {
   if (sum(is.finite(y)) < 2) {
     if (isFALSE(extrapolate)) {

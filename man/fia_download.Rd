@@ -17,8 +17,8 @@ fia_download(
 \item{download_dir}{where to save the zip files.}
 
 \item{extract}{which files to extract from the downloaded zip file—those
-needed by \code{forestTIME.builder}, those needed by \code{rFIA} (in addition to all
-the tables \code{forestTIME.builder} needs), all the files, or none.}
+needed by \code{forestTIME}, those needed by \code{rFIA} (in addition to all
+the tables \code{forestTIME} needs), all the files, or none.}
 
 \item{keep_zip}{logical; keep the .zip file after CSVs are extracted?
 Defaults to \code{TRUE}.}

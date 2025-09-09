@@ -101,7 +101,7 @@ fia_tidy <- function(db) {
     dplyr::group_by(tree_ID) |>
     tidyr::fill(MORTYR, .direction = c("updown")) |>
     # if trees have more than one SPCD, set all to be the most recent SPCD
-    # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/53)
+    # (https://github.com/Evans-Ecology-Lab/forestTIME/issues/53)
     dplyr::mutate(SPCD = dplyr::last(SPCD)) |>
     dplyr::ungroup()
 
@@ -127,7 +127,7 @@ fia_tidy <- function(db) {
   #     !(sum(is.finite(DIA) & is.finite(HT)) == 0 & all(STANDING_DEAD_CD == 0))
   #   ) |>
   #   # remove trees that were measured in error
-  #   # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/59#issuecomment-2758575994)
+  #   # (https://github.com/Evans-Ecology-Lab/forestTIME/issues/59#issuecomment-2758575994)
   #   dplyr::filter(!any(RECONCILECD %in% c(7, 8))) |>
   #   dplyr::ungroup() |>
 

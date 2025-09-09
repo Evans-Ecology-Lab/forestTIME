@@ -1,14 +1,14 @@
-# forestTIME-builder
+# forestTIME
 
 <!-- badges: start -->
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![run_workflow.yml](https://github.com/Evans-Ecology-Lab/forestTIME-builder/actions/workflows/run_workflow.yml/badge.svg?branch=main)](https://github.com/Evans-Ecology-Lab/forestTIME-builder/actions/workflows/run_workflow.yml)
-[![R-CMD-check](https://github.com/Evans-Ecology-Lab/forestTIME-builder/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Evans-Ecology-Lab/forestTIME-builder/actions/workflows/R-CMD-check.yaml)
+[![run_workflow.yml](https://github.com/Evans-Ecology-Lab/forestTIME/actions/workflows/run_workflow.yml/badge.svg?branch=main)](https://github.com/Evans-Ecology-Lab/forestTIME/actions/workflows/run_workflow.yml)
+[![R-CMD-check](https://github.com/Evans-Ecology-Lab/forestTIME/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Evans-Ecology-Lab/forestTIME/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 > [!CAUTION]
-> `forestTIME.builder` is an **experimental** package and currently a **work-in-progress**. 
+> `forestTIME` is an **experimental** package and currently a **work-in-progress**. 
 > It is **not** an official product of the US Forest Service. 
 
 
@@ -16,19 +16,19 @@ This R package contains functions to create annualized versions of FIA data. It 
 
 ## Installation
 
-`forestTIME.builder` is not on CRAN.
+`forestTIME` is not on CRAN.
 
 To install from r-universe:
 
 ```r
-install.packages("forestTIME.builder", repos = c("https://cct-datascience.r-universe.dev", getOption("repos")))
+install.packages("forestTIME", repos = c("https://cct-datascience.r-universe.dev", getOption("repos")))
 ```
 
 To install from GitHub:
 
 ```r
 #install.packages("pak")
-pak::pak("Evans-Ecology-Lab/forestTIME-builder")
+pak::pak("Evans-Ecology-Lab/forestTIME")
 ```
 
 ## I just want the data!
@@ -39,7 +39,7 @@ If you just want to download annualized FIA tables produced by `forestTIME.build
 
 If you'd like to make modifications to the functions in this package, you are welcome to do so.  However, it would be ideal if those modifications could be incorporated into this package to benefit everyone using it and to keep a single "source of truth" for this workflow. 
 
-If you are brand new to R package development or using GitHub, I recommend you start by opening an issue to make a suggestion or report a bug.  If you have some familiarity with R code and feel comfortable, feel free to make a pull request. I recommend using `usethis` to handle this process if you are not familiar with git and GitHub.  Start by [setting up your GitHub credentials](https://usethis.r-lib.org/articles/git-credentials.html) and then use `usethis::create_from_github("Evans-Ecology-Lab/forestTIME-builder")` to (possibly fork) and clone this repository. The `usethis` package has some [nice documentation](https://usethis.r-lib.org/articles/pr-functions.html) on how to create pull requests using it's `pr_*()` functions, namely `pr_init()` to create a new branch, `pr_push()` to actually open the pull request on GitHub, and `pr_finish()` to clean things up after yoru pull request is merged.
+If you are brand new to R package development or using GitHub, I recommend you start by opening an issue to make a suggestion or report a bug.  If you have some familiarity with R code and feel comfortable, feel free to make a pull request. I recommend using `usethis` to handle this process if you are not familiar with git and GitHub.  Start by [setting up your GitHub credentials](https://usethis.r-lib.org/articles/git-credentials.html) and then use `usethis::create_from_github("Evans-Ecology-Lab/forestTIME")` to (possibly fork) and clone this repository. The `usethis` package has some [nice documentation](https://usethis.r-lib.org/articles/pr-functions.html) on how to create pull requests using it's `pr_*()` functions, namely `pr_init()` to create a new branch, `pr_push()` to actually open the pull request on GitHub, and `pr_finish()` to clean things up after yoru pull request is merged.
 
 
 ## Citation
@@ -47,8 +47,8 @@ If you are brand new to R package development or using GitHub, I recommend you s
 To cite this work, please use:
 
 > Scott E.R., Diaz R., Steinberg D., Riemer K., Evans M. (2025).
-> “forestTIME.builder: Generate Annualized Carbon and Biomass Estimates From FIA
-  Data” <https://github.com/Evans-Ecology-Lab/forestTIME-builder>.
+> “forestTIME: Generate Annualized Carbon and Biomass Estimates From FIA
+  Data” <https://github.com/Evans-Ecology-Lab/forestTIME>.
 
 Please also cite Westfall et al. (2024):
 

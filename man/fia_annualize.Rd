@@ -15,7 +15,7 @@ tree was dead? Passed to \code{\link[=adjust_mortality]{adjust_mortality()}}.}
 \description{
 Converts tidied panel data into annualized data with interpolated measurments
 for trees for years between inventories. This happens in three steps, which
-can be "manually" replicated by chaining other \code{forestTIME.builder}
+can be "manually" replicated by chaining other \code{forestTIME}
 functions.
 }
 \details{

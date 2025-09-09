@@ -1,12 +1,14 @@
-# forestTIME.builder (development version)
+# forestTIME (development version)
 
-- `fia_tidy()` now only keeps base-intensity plots (`INTENSITY == 1 & SUBCYCLE != 0 & SUBCYCLE != 99`).
-- Fixed a bug that was causing `TPA_UNADJ` to not be populated for all trees in states that use macroplots ([#160](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/160)).
-- Fixed a bug in `fia_split_composite_ids()` that caused it to fail when `tree_ID` was `NA` (as it is in conditions with no observations). It now falls back on the information in `plot_ID` when `tree_ID` is in the data frame but `NA` ([#149](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/149)).
+
+- This package has been re-named from `forestTIME.builder` to `forestTIME`
+- `fia_tidy()` now only keeps base-intensity plots (`INTENSITY == 1`).
+- Fixed a bug that was causing `TPA_UNADJ` to not be populated for all trees in states that use macroplots ([#160](https://github.com/Evans-Ecology-Lab/forestTIME/issues/160)).
+- Fixed a bug in `fia_split_composite_ids()` that caused it to fail when `tree_ID` was `NA` (as it is in conditions with no observations). It now falls back on the information in `plot_ID` when `tree_ID` is in the data frame but `NA` ([#149](https://github.com/Evans-Ecology-Lab/forestTIME/issues/149)).
 - `fia_estimate()` now returns the additional variables `DRIBIO_FOLIAGE`, `VOLTSGRS`, and `VOLTSSND` in addition to `DRYBIO_AG` and `CARBON_AG`.
 - Code to deal with negative extrapolated values has moved to `adjust_mortality()`.  Therefore, the results of `interpolate_data()` may now contain negative numbers, which are non-sensible.  Use `fia_annualize()` whenever possible to ensure sensible results.
 - `fia_download()` arguments have changed.  `keep_zip` now defaults to `TRUE`.  `extract` options have changed from `TRUE`/`FALSE` to `"forestTIME"`, `"rFIA"`, `"all"`, or `"none"` to extract just files needed by `forestTIME`, those used by `rFIA` (for compatibility), all files, or none.
-- Fixed a bug in interpolation of `CONDPROP_UNAJ`.  Now the workflow retains all "empty" conditions (i.e. `CONDID`s with no trees in them) and properly interpolates `CONDPROP_UNADJ` so the proportion for all conditions in a plot in a year sum to 1 (within rounding error) ([#64](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/64)).
+- Fixed a bug in interpolation of `CONDPROP_UNAJ`.  Now the workflow retains all "empty" conditions (i.e. `CONDID`s with no trees in them) and properly interpolates `CONDPROP_UNADJ` so the proportion for all conditions in a plot in a year sum to 1 (within rounding error) ([#64](https://github.com/Evans-Ecology-Lab/forestTIME/issues/64)).
 - `fia_annualize()` now adds and `EXPNS` column calculated as the total land area of the state in acres divided by the number of plots in the interpolated data.  It *should* be usable in the same ways the `EXPNS` column in the "raw" FIA data can be used.
 - Renames the `state_codes` dataset to `state_areas` and adds a column for state land area in acres.
 
@@ -22,8 +24,8 @@
 
 # forestTIME.builder 1.1.0
 
-- Fixed a bug causing the `INTENSITY` column (and possibly other plot-level variables) to be filled incorrectly by `expand_data()` ([#122](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/122), reported by @brian-f-walters-usfs)
-- `expand_data()` now converts `NA`s for `CULL` to 0s (this is what the carbon estimation code in `predictCRM2()` does already anyways) so that they are better interpolated.  `CULL` values are converted *back* to `NA` if `DIA` is < 5 after interpolation by `interpolate_data()` ([#77](https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/77)).
+- Fixed a bug causing the `INTENSITY` column (and possibly other plot-level variables) to be filled incorrectly by `expand_data()` ([#122](https://github.com/Evans-Ecology-Lab/forestTIME/issues/122), reported by @brian-f-walters-usfs)
+- `expand_data()` now converts `NA`s for `CULL` to 0s (this is what the carbon estimation code in `predictCRM2()` does already anyways) so that they are better interpolated.  `CULL` values are converted *back* to `NA` if `DIA` is < 5 after interpolation by `interpolate_data()` ([#77](https://github.com/Evans-Ecology-Lab/forestTIME/issues/77)).
 - `prep_data()` no longer filters out any rows (un-doing #59 and addressing #99).  If you want to remove certain rows, do this between `prep_data()` and `expand_data()`.
 - Trees with only a single measurement have their single measurement carried forward during extrapolation rather than getting dropped from the data (#94, #99).
 - In the case when `MORTYR` is an inventory year where the tree is alive (`STATUSCD` 1), it is now assumed by `adjust_mortality()` that the tree died in the year following `MORTYR` in order to keep the observation (#61).

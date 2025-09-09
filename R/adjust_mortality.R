@@ -45,7 +45,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
     # If a tree is marked as alive (STATUSCD 1) in the recorded MORTYR (i.e.
     # MORTYR is an inventory year), then assume death happened the year after
     # that inventory year
-    # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/61)
+    # (https://github.com/Evans-Ecology-Lab/forestTIME/issues/61)
 
     df <- data_interpolated |>
       dplyr::group_by(tree_ID) |>
@@ -93,7 +93,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
     df <- data_interpolated |> dplyr::group_by(tree_ID)
   }
 
-# If trees are interpolated to below FIA thresholds for being measured, set
+  # If trees are interpolated to below FIA thresholds for being measured, set
   # them to fallen dead. For most trees, this is DIA < 1 and ACTUALHT < 4.5.
   # For woodland species, the ACTUALHT threshold is 1. To figure out if a tree
   # is a woodland species, we need to pull in one of the ref tables
@@ -107,7 +107,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
     )
 
   data_adjusted <- df |>
-    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |> 
+    dplyr::left_join(ref_species, by = dplyr::join_by(SPCD)) |>
     # TODO: Is there a way of only having to do the case_when once?  E.g. would
     # it be faster to create a column "dead_fallen" and then in a subsequent
     # step use dead_fallen to set STATUSCD and STANDING_DEAD_CD? this function
@@ -123,7 +123,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
         JENKINS_SPGRPCD == 10 & (DIA < 1 | HT < 1 | ACTUALHT < 1) ~ 0,
         .default = STANDING_DEAD_CD
       )
-    ) |> 
+    ) |>
     dplyr::select(-JENKINS_SPGRPCD)
 
   data_adjusted |>
@@ -145,11 +145,11 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
       )
     ) |>
     # trees in non-sampled areas shoudn't have measurements for anything
-    # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/59
+    # https://github.com/Evans-Ecology-Lab/forestTIME/issues/59
     dplyr::mutate(
       dplyr::across(
         c(DIA, HT, ACTUALHT, CULL, CR),
-        \(x)
+        \(x) {
           dplyr::if_else(
             (STATUSCD == 0 & RECONCILECD %in% c(5, 6, 9)) |
               (COND_STATUS_CD != 1),
@@ -157,6 +157,7 @@ adjust_mortality <- function(data_interpolated, use_mortyr = TRUE) {
             x,
             missing = x
           )
+        }
       )
     ) |>
     dplyr::ungroup()

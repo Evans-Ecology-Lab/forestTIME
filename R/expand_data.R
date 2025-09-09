@@ -21,7 +21,7 @@ expand_data <- function(data) {
   data <- data |>
     # replace NAs for some categorical variables with 999 (temporarily) so they
     # switch from NA correctly
-    # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/72)
+    # (https://github.com/Evans-Ecology-Lab/forestTIME/issues/72)
     dplyr::mutate(dplyr::across(
       any_of(c(
         "STATUSCD",
@@ -35,7 +35,7 @@ expand_data <- function(data) {
       \(x) dplyr::if_else(is.na(x) & !is.na(tree_ID), 999, x)
     )) |>
     # replace NAs for CULL with 0s so they interpolate correctly
-    # (https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/77)
+    # (https://github.com/Evans-Ecology-Lab/forestTIME/issues/77)
     dplyr::mutate(
       CULL = dplyr::if_else(is.na(CULL) & !is.na(tree_ID), 0, CULL)
     ) |>

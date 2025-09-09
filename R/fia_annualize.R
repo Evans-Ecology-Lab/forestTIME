@@ -2,7 +2,7 @@
 #'
 #' Converts tidied panel data into annualized data with interpolated measurments
 #' for trees for years between inventories. This happens in three steps, which
-#' can be "manually" replicated by chaining other `forestTIME.builder`
+#' can be "manually" replicated by chaining other `forestTIME`
 #' functions.
 #'
 #' First, data is expanded by [expand_data()] to add rows for years between
@@ -27,10 +27,8 @@
 #'   tree was dead? Passed to [adjust_mortality()].
 #' @export
 fia_annualize <- function(data_tidy, use_mortyr = TRUE) {
-  
-data_tidy |>
+  data_tidy |>
     expand_data() |>
-    interpolate_data() |> 
+    interpolate_data() |>
     adjust_mortality(use_mortyr = use_mortyr)
 }
-

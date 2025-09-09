@@ -43,8 +43,8 @@ tables_rfia <- c(
 #' @param states vector of state abbreviations; for all states use `state.abb`.
 #' @param download_dir where to save the zip files.
 #' @param extract which files to extract from the downloaded zip file—those
-#'   needed by `forestTIME.builder`, those needed by `rFIA` (in addition to all
-#'   the tables `forestTIME.builder` needs), all the files, or none.
+#'   needed by `forestTIME`, those needed by `rFIA` (in addition to all
+#'   the tables `forestTIME` needs), all the files, or none.
 #' @param keep_zip logical; keep the .zip file after CSVs are extracted?
 #' Defaults to `TRUE`.
 #'
@@ -115,12 +115,12 @@ fia_download <- function(
       resume = TRUE,
       progress = TRUE,
       multiplex = TRUE,
-      useragent = "forestTIME-builder (https://github.com/Evans-Ecology-Lab/forestTIME-builder)"
+      useragent = "forestTIME (https://github.com/Evans-Ecology-Lab/forestTIME)"
     )
     # zips <- resp$destfile #not sure if this is used
     # TODO: Don't error if download fails, instead check response for issues and
     # retry.  Then warn if only some downloads failed.
-    # https://github.com/Evans-Ecology-Lab/forestTIME-builder/issues/91
+    # https://github.com/Evans-Ecology-Lab/forestTIME/issues/91
 
     # if (!any(fs::file_exists(resp$destfile))) {
     #   cli::cli_abort(c(

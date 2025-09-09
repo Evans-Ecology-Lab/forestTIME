@@ -1,6 +1,6 @@
 state = Sys.getenv("STATE", unset = "RI") #use RI for testing because it is small
 
-library(forestTIME.builder)
+library(forestTIME)
 library(dplyr)
 library(purrr)
 
@@ -23,41 +23,32 @@ if (do_both) {
   data_mortyr <-
     data_interpolated |>
     adjust_mortality(use_mortyr = TRUE) #|>
-    # fia_estimate() |> 
-    # fia_split_composite_ids()
+  # fia_estimate() |>
+  # fia_split_composite_ids()
 }
 
 data_midpt <-
   data_interpolated |>
-  adjust_mortality(use_mortyr = FALSE)#|>
-  # fia_estimate() |>
-  # fia_split_composite_ids()
+  adjust_mortality(use_mortyr = FALSE) #|>
+# fia_estimate() |>
+# fia_split_composite_ids()
 
-  max_rows <- 1.6e6 #larger than CO, which works currently
-  if (nrow(data_midpt) <= max_rows) {
-    if (do_both) {
-      data_mortyr <- data_mortyr |>
-        fia_estimate() |>
-        fia_split_composite_ids()
-    }
-    data_midpt <- data_midpt |>
+max_rows <- 1.6e6 #larger than CO, which works currently
+if (nrow(data_midpt) <= max_rows) {
+  if (do_both) {
+    data_mortyr <- data_mortyr |>
       fia_estimate() |>
       fia_split_composite_ids()
-  } else {
-    #chunk into a list of data frames with at most `max_rows` rows
-    n_groups <- ceiling(nrow(data_midpt) / max_rows)
+  }
+  data_midpt <- data_midpt |>
+    fia_estimate() |>
+    fia_split_composite_ids()
+} else {
+  #chunk into a list of data frames with at most `max_rows` rows
+  n_groups <- ceiling(nrow(data_midpt) / max_rows)
 
-    if (do_both) {
-      data_mortyr <- data_mortyr |>
-        mutate(cut_group = cut(1:n(), n_groups)) |>
-        group_by(cut_group) |>
-        group_split() |>
-        map(fia_estimate) |>
-        list_rbind() |>
-        fia_split_composite_ids()
-    }
-
-    data_midpt <- data_midpt |>
+  if (do_both) {
+    data_mortyr <- data_mortyr |>
       mutate(cut_group = cut(1:n(), n_groups)) |>
       group_by(cut_group) |>
       group_split() |>
@@ -65,6 +56,15 @@ data_midpt <-
       list_rbind() |>
       fia_split_composite_ids()
   }
+
+  data_midpt <- data_midpt |>
+    mutate(cut_group = cut(1:n(), n_groups)) |>
+    group_by(cut_group) |>
+    group_split() |>
+    map(fia_estimate) |>
+    list_rbind() |>
+    fia_split_composite_ids()
+}
 
 # Write out to parquet
 cli::cli_progress_step("Writing results")

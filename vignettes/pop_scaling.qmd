@@ -19,23 +19,23 @@ knitr:
 ```{r}
 #| label: setup
 
-library(forestTIME.builder)
+library(forestTIME)
 library(dplyr)
 library(rFIA)
 library(ggplot2)
 ```
 
-How can we use the interpolated data produced by `forestTIME.builder` to get popluation-level (i.e. state-level) per-area estimates?
+How can we use the interpolated data produced by `forestTIME` to get popluation-level (i.e. state-level) per-area estimates?
 
 ::: callout-warning
 
-The interpolated values produced by `forestTIME.builder` are *inferences* and not samples, so it may not be appropriate to use (modified) design-based estimators, as we do in this vignette, which treat the data, including interpolated values, as a probablity sample.
+The interpolated values produced by `forestTIME` are *inferences* and not samples, so it may not be appropriate to use (modified) design-based estimators, as we do in this vignette, which treat the data, including interpolated values, as a probablity sample.
 
 :::
 
 ## Example data
 
-We'll use RI as an example state because it is small. We'll just use the built-in example data that comes with `forestTIME.builder`, but if you were to download your own and you wanted to use it with `rFIA` also, make sure to set `extract = "rFIA"` to extract all the tables needed for both `forestTIME.builder` and `rFIA`.
+We'll use RI as an example state because it is small. We'll just use the built-in example data that comes with `forestTIME`, but if you were to download your own and you wanted to use it with `rFIA` also, make sure to set `extract = "rFIA"` to extract all the tables needed for both `forestTIME` and `rFIA`.
 
 ```{r}
 #| label: download-data
@@ -51,7 +51,7 @@ fia_download(states = "RI", download_dir = "fia", extract = "rFIA")
 ```{r}
 #| label: rfia-biomass
 rfia_RI <- readFIA(
-  dir = system.file("exdata", package = "forestTIME.builder"),
+  dir = system.file("exdata", package = "forestTIME"),
   states = "RI"
 )
 
@@ -95,7 +95,7 @@ We'll use the standard basic workflow to get estimated aboveground carbon for ea
 # Data prep
 db <- fia_load(
   "RI",
-  dir = system.file("exdata", package = "forestTIME.builder")
+  dir = system.file("exdata", package = "forestTIME")
 )
 data <- fia_tidy(db) #single tibble
 
