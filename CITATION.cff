@@ -3,8 +3,7 @@
 
 cff-version: 1.2.0
 title: >-
-  forestTIME: generating annualized carbon and
-  biomass estimates from FIA data
+  forestTIME: Generate Annualized Carbon and Biomass Estimates From FIA Data
 message: >-
   If you use this software, please cite it as well as Westfall et al. 
   (2024) using the metadata from this file.
@@ -49,7 +48,9 @@ keywords:
   - biomass estimation
 license: GPL-3.0
 version: 2.1.0
-date-released: 2025-04-14
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.17088598
 references:
   - type: report
     title: A national-scale tree volume, biomass, and carbon modeling system for the
