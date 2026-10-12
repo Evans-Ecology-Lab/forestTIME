@@ -1,12 +1,3 @@
----
-output:
-  html_document: default
-  pdf_document: default
-editor_options: 
-  markdown: 
-    wrap: sentence
----
-
 # forestTIME: Expanding longitudinal information from forest inventories <img src="./images/forestTIME_Logo.png" align="right" height="180" width="180"/>
 
 <!-- badges: start -->
