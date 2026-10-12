@@ -30,7 +30,7 @@ The input tibble with additional columns `UNITCD`, `STATECD`,
 db <- fia_load("RI", dir = system.file("exdata", package = "forestTIME"))
 data_tidy <- fia_tidy(db)
 #> ℹ Wrangling data
-#> ✔ Wrangling data [427ms]
+#> ✔ Wrangling data [428ms]
 #> 
 fia_split_composite_ids(data_tidy)
 #> # A tibble: 15,890 × 35

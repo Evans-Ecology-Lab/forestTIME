@@ -1,4 +1,4 @@
-# forestTIME
+# forestTIME: Expanding longitudinal information from forest inventories ![](./images/forestTIME_Logo.png)
 
 > \[!CAUTION\] `forestTIME` is an **experimental** package and currently
 > a **work-in-progress**. It is **not** an official product of the US
