@@ -125,6 +125,31 @@ fia_tidy <- function(db) {
     dplyr::mutate(SPCD = dplyr::last(SPCD)) |>
     dplyr::ungroup()
 
+  # filter out trees that were recorded due to cruiser error or procedural change.
+  # identify trees to drop
+  #trees_to_drop <- data |>
+    #group_by(tree_ID) |>
+    #arrange(INVYR, .by_group = TRUE) |>
+    #summarize(
+      #first_reconcile = first(RECONCILECD),
+      #last_reconcile  = last(RECONCILECD),
+      #n_records       = n(),
+      #.groups = "drop"
+    #) |>
+    #filter(
+      #last_reconcile %in% c(7, 8) &          # last measurement is 7 or 8
+        #!(first_reconcile %in% c(7, 8)) &    # first measurement is NOT 7 or 8
+        #n_records > 1                        # tree has earlier measurements
+    #) |>
+    #pull(tree_ID)
+
+  #cli::cli_alert_warning(
+    #"{length(trees_to_drop)} trees dropped due cruiser error or procedural change.")
+
+  # drop them
+  #data <- data |> filter(!tree_ID %in% trees_to_drop)
+
+
   # at this point, get the list of plots and years as following steps may remove
   # "empty" plots
   all_plots <- data |>

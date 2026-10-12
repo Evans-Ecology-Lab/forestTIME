@@ -152,6 +152,16 @@ interpolate_data <- function(data_expanded) {
       )
     )
 
+  # make it so CR cannot be negative after interpolation. Set dead trees to NA for CR, Keep NA values as NAs, replace negative values with 0, and keep all other interpolated CR values.
+  data_interpolated <- data_interpolated |>
+    dplyr::mutate(
+      CR = dplyr::case_when(
+        STATUSCD == 2 ~ NA_real_,
+        is.na(CR)     ~ NA_real_,
+        CR < 0        ~ 0,
+        TRUE          ~ CR)
+      )
+
   # merge the interpolated COND values back in
   data_adjusted_cond <- dplyr::full_join(
     data_interpolated |> dplyr::select(-CONDPROP_UNADJ, -COND_STATUS_CD),

@@ -121,8 +121,6 @@ expand_data <- function(data, year_var = c("INVYR", "MEASYEAR")) {
       any_of(c(
         "plot_ID",
         "tree_ID",
-        "INVYR",
-        "MEASYEAR",
         "YEAR",
         "YEAR_SOURCE",
         "interpolated",
@@ -134,5 +132,6 @@ expand_data <- function(data, year_var = c("INVYR", "MEASYEAR")) {
       )),
       everything()
     )
+
   tree_annual
 }

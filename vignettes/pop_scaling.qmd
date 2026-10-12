@@ -18,13 +18,6 @@ execute:
   eval: false
 ---
 
-::: {.callout-caution}
-## 🚧 UNDER CONSTRUCTION 🚧
-
-This vignette currently doesn't work with the latest version of `forestTIME`!  We will fix it soon!
-
-:::
-
 ```{r}
 #| label: setup
 
@@ -34,17 +27,17 @@ library(rFIA)
 library(ggplot2)
 ```
 
-How can we use the interpolated data produced by `forestTIME` to get popluation-level (i.e. state-level) per-area estimates?
+How can we use the interpolated data produced by `forestTIME` to get population-level (i.e. state-level) per-area estimates?
 
 ::: callout-warning
 
-The interpolated values produced by `forestTIME` are *inferences* and not samples, so it may not be appropriate to use (modified) design-based estimators, as we do in this vignette, which treat the data, including interpolated values, as a probablity sample.
+The interpolated values produced by `forestTIME` are *inferences* and not samples, so it may not be appropriate to use (modified) design-based estimators, as we do in this vignette, which treat the data, including interpolated values, as a probability sample.
 
 :::
 
 ## Example data
 
-We'll use RI as an example state because it is small. We'll just use the built-in example data that comes with `forestTIME`, but if you were to download your own and you wanted to use it with `rFIA` also, make sure to set `extract = "rFIA"` to extract all the tables needed for both `forestTIME` and `rFIA`.
+We'll use RI as an example state because it is small. We'll compare our estimates with rFIA, adapting examples in the [FIA demystified vignette](https://doserlab.com/files/rfia/articles/fiademystified#without-sampling-errors) to our annualized data. We'll use the built-in example data that comes with `forestTIME`, but if you were to download your own and you wanted to use it with `rFIA` also, make sure to set `extract = "rFIA"` to extract all the tables needed for both `forestTIME` and `rFIA`.
 
 ```{r}
 #| label: download-data
@@ -72,8 +65,7 @@ agc_rfia_annual <-
     treeType = "live",
     landType = 'forest',
     component = "AG",
-    areaDomain = COND_STATUS_CD == 1 & INTENSITY == 1
-  ) |>
+    areaDomain = COND_STATUS_CD == 1) |>
   mutate(method = "rFIA annual") |>
   select(method, YEAR, carbon_ton_acre = CARB_ACRE, carbon_total = CARB_TOTAL)
 
@@ -85,8 +77,7 @@ agc_rfia_ti <-
     treeType = "live",
     landType = 'forest',
     component = "AG",
-    areaDomain = COND_STATUS_CD == 1 & INTENSITY == 1
-  ) |>
+    areaDomain = COND_STATUS_CD == 1) |>
   mutate(method = "rFIA TI") |>
   select(method, YEAR, carbon_ton_acre = CARB_ACRE, carbon_total = CARB_TOTAL)
 
@@ -108,14 +99,19 @@ db <- fia_load(
 )
 data <- fia_tidy(db) #single tibble
 
-# Expand to include all years between surveys and interpolate/extrapolate
-# Adjust for mortality and estimate carbon.
+# Expand to include all years between surveys, interpolate/extrapolate, and adjust for mortality
+# Assign FIA design-based evaluation information to annualized data
+# Estimate carbon
 data_midpt <- data |>
   fia_annualize(use_mortyr = FALSE) |>
+  fia_design(db) |>
   fia_allometry()
 ```
 
-I'll add domain indicator columns as is done in the `rFIA` demystified vignette so we calculate carbon in live trees per area of forested land using base intensity plots only.
+## Domain Indicator 
+
+We'll add domain indicator columns as is done in the `rFIA` demystified vignette following equation 4.1, pg. 47 of Bechtold and Patterson(2005). These will be used to select which trees/plots/conditions fall within our population of interest. In this example we set the domain indicator for live trees per acre of forested land.
+
 Reason:
 
 > We build separate domain indicators for estimating tree totals and area totals, because we can specify different domains of interest for both.
@@ -130,54 +126,39 @@ So we can't just `filter(STATUSCD == 1 & COND_STATUSCD == 1)` to estimate carbon
 data_midpt <-
   data_midpt |>
   mutate(
-    aDI = if_else(COND_STATUS_CD == 1 & INTENSITY == 1, 1, 0), #forested land
-    tDI = if_else(STATUSCD == 1, 1, 0) * aDI #live trees on forested land
+    aDI = if_else(COND_STATUS_CD == 1 & PLOT_STATUS_CD == 1, 1, 0), #forested land
+    tDI = if_else(STATUSCD == 1 & PLOT_STATUS_CD == 1, 1, 0) * aDI #live trees on forested land
   )
 ```
 
 
+## Without Sampling Error - Using Expansion Factors
 
-## Expansion factors
+Expansion factors are weights that scale tree-level measurements to population-level totals. They were widely used in the older periodic FIA sampling design because they made estimation simple. However, the expansion factors provided in FIADB (POP_STRATUM.EXPNS) do not support valid variance estimation, and in the annual panel system they become unstable because each panel combination produces different weights. They are still widely used so we will demonstrate how to use them with our annualized data set. See [Bechtold and Patterson (2005)](https://www.srs.fs.usda.gov/pubs/gtr/gtr_srs080/gtr_srs080.pdf) section 4.4 for more information. 
 
-There are two issues in using the `EXPNS` provided in the FIA data with our annualized data: 1) it is not straightforward to join the tables in to get the `EXPNS` column, and 2) there are now many more plots in each year, so the `EXPNS` column is no longer accurate (it is the acres of the entire state represented by each plot). 
-Therefore, `fia_calc_expns()` calculates the `EXPNS` column as the total land area of the state divided by the number of plots in the interpolated data for that state in each year.  
+The FIA-supplied `EXPNS` values are no longer appropriate when using forestTIME because annualization changes the number of plots with "measurements" in each individual year. We therefore compute a new expansion factor (`EXPNS_ft`) in fia_design using FIA's post stratified evaluation information with our updated plot counts. 
+
 We think these `EXPNS` values can be used much in the same way as the ones in the "raw" FIA database.
-
-```{r}
-#| label: expns
-
-data_midpt <- data_midpt |> fia_calc_expns()
-
-data_midpt |>
-  select(YEAR, EXPNS) |>
-  group_by(YEAR) |>
-  summarize(EXPNS = unique(EXPNS)) |>
-  ggplot(aes(x = YEAR, y = EXPNS)) +
-  geom_line()
-```
-
-You'll notice that the calculated `EXPNS` follow a "U" shape rather than being constant.
-That is because in our interpolated data, there are fewer plots in the beginning and end of the timeseries because we do not extrapolate beyond a panel's first and last inventory.
 
 Using these expansion factors, we can follow the methods in the [FIA demystified vignette](https://doserlab.com/files/rfia/articles/fiademystified#without-sampling-errors).
 
 ```{r}
-#| label: estimators
+#| label: without-sample-error-estimators
 
 tree_totals <- data_midpt |>
   group_by(plot_ID, YEAR) |>
   summarize(
-    # purposefully omits ajustment factor `aAdj` because it is assumed to be 1
-    carbPlot = sum(CARBON_AG * TPA_UNADJ * EXPNS * tDI / 2000, na.rm = TRUE), #tons/plot
+    # purposefully omits adjustment factor `aAdj` because it is assumed to be 1
+    carbPlot = sum(CARBON_AG_ft * TPA_UNADJ * EXPNS_ft * tDI / 2000, na.rm = TRUE), #tons/plot
   )
 
 area_totals <- data_midpt |>
   group_by(plot_ID, YEAR) |>
   # Keep only one row for each condition in each plot and year
-  distinct(CONDID, COND_STATUS_CD, CONDPROP_UNADJ, EXPNS, aDI) |>
+  distinct(CONDID, COND_STATUS_CD, CONDPROP_UNADJ, EXPNS_ft, aDI) |>
   summarize(
-    # purposefully omits ajustment factor `aAdj` because it is assumed to be 1
-    forArea = sum(CONDPROP_UNADJ * EXPNS * aDI, na.rm = TRUE) #acres/plot
+    # purposefully omits adjustment factor `aAdj` because it is assumed to be 1
+    forArea = sum(CONDPROP_UNADJ * EXPNS_ft * aDI, na.rm = TRUE) #acres/plot
   )
 
 agc_pop <- inner_join(tree_totals, area_totals) |>
@@ -186,7 +167,7 @@ agc_pop <- inner_join(tree_totals, area_totals) |>
     CARB_AG_TOTAL = sum(carbPlot, na.rm = TRUE), # tons/plot
     AREA_TOTAL = sum(forArea, na.rm = TRUE) # acres/plot
   ) |>
-  # the units work out to still be tons(live carbon)/acre(forested land) even if the variable names are misleading
+  # the units work out to be tons(live carbon)/acre(forested land)
   mutate(method = "forestTIME", carbon_ton_acre = CARB_AG_TOTAL / AREA_TOTAL) |>
   select(
     method,
@@ -199,7 +180,7 @@ agc_pop
 ```
 
 ```{r}
-#| label: plot-results
+#| label: plot-without-sample-error-results
 
 all <- bind_rows(agc_rfia_annual, agc_rfia_ti, agc_pop)
 
@@ -213,4 +194,125 @@ ggplot(all, aes(x = YEAR, y = carbon_ton_acre, color = method)) +
 
 ```
 
-We have some ballbark similar estimates to the ones `rFIA` produces.
+We have some ballpark similar estimates to the ones `rFIA` produces.
+
+## With Sampling Error
+
+Note: Small strata merging has not yet been implemented in the forestTIME workflow so some strata may contain too few plots to compute reliable variance estimates. Small strata merging is currently being developed for forestTIME. Disregard if only interested in totals and ratio estimates.
+
+If we want to compute sampling error using FIA's design-based variance estimator, we cannot use `EXPNS`. Instead, we need to use post-stratification where the landscape is divided into estimation units (for example, private land, public land, water) and then into smaller strata (for example, tree canopy cover) using remote-sensing data. Each pixel is assigned to a stratum, and the proportion of area in each stratum becomes its stratum weight. Phase 2 ground plots are then linked to their stratum (P2POINTCNT), and plot-level measurements are averaged within each stratum. The stratum means are then combined using the stratum weights first at the strata level and then at the estimation unit level to produced design-based population estimates. This stratified information changes from year to year as the land is resurveyed and this is reflected in the `EVALID`.
+
+The `fia_design()` function attaches all of the necessary design information to the annualized data so that population estimates can be produced using FIA's post-stratified estimators. forestTIME attempts to match the data year to the same evaluation year however, some plots belong to non-matching evaluation years if a). no evaluation was done that year or b). the plot never belonged to that evaluation. 
+
+```{r}
+#| label: with-sample-error-estimators-plot-level
+
+#  Estimate Tree attributes -- plot level
+tree_pop <- data_midpt |>
+  filter(EXPVOL == TRUE) |>
+  distinct(ESTN_UNIT_CN, STRATUM_CN, CONDID, plot_ID, tree_ID, YEAR, .keep_all = TRUE) |>
+  group_by(YEAR, ESTN_UNIT_CN, STRATUM_CN, plot_ID, EVALID) |>
+  summarize(
+    carbPlot = sum(CARBON_AG_ft * TPA_UNADJ * tDI / 2000, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Estimate Area attributes -- plot level
+area_pop <- data_midpt |>
+  filter(EXPCURR == TRUE) |>   # use EXPCURR flag
+  distinct(ESTN_UNIT_CN, STRATUM_CN, CONDID, plot_ID, YEAR, .keep_all = TRUE) |>
+  group_by(YEAR, P1POINTCNT, P1PNTCNT_EU, P2POINTCNT_ft, AREA_USED,
+           ESTN_UNIT_CN, STRATUM_CN, plot_ID, EVALID) |>
+  summarize(
+    forArea = sum(CONDPROP_UNADJ * aDI, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Joining the two tables
+carb_pop_plot <- left_join(tree_pop, area_pop)
+```
+
+```{r}
+#| label: with-sample-error-estimators-strata-level
+
+# Strata level estimates
+carb_pop_strat <- carb_pop_plot |>
+  group_by(YEAR, ESTN_UNIT_CN, STRATUM_CN, EVALID) |>
+  summarize(aStrat = mean(forArea, na.rm = TRUE), # Area mean
+            carbStrat = mean(carbPlot, na.rm = TRUE), # Carbon mean
+            # We don't want a vector of these values, since they are repeated
+            P2POINTCNT = first(P2POINTCNT_ft),
+            AREA_USED = first(AREA_USED),
+            # Strata weight, relative to estimation unit
+            w = first(P1POINTCNT) / first(P1PNTCNT_EU),
+            # Strata level variances
+            aVar = (sum(forArea^2) - sum(P2POINTCNT * aStrat^2)) / 
+                   (P2POINTCNT * (P2POINTCNT-1)),
+            carbVar = (sum(carbPlot^2) - sum(P2POINTCNT * carbStrat^2)) / 
+                      (P2POINTCNT * (P2POINTCNT-1)),
+            # Strata level co-varainces
+            carbCV = (sum(forArea*carbPlot) - sum(P2POINTCNT * aStrat *carbStrat)) / 
+                     (P2POINTCNT * (P2POINTCNT-1)), 
+            .groups = 'drop')
+
+# Moving on to the estimation unit estimates
+carb_pop_eu <- carb_pop_strat |>
+  group_by(YEAR, ESTN_UNIT_CN, EVALID) |>
+  summarize(aEst = sum(aStrat * w, na.rm = TRUE) * first(AREA_USED), # Mean Area
+            carbEst = sum(carbStrat * w, na.rm = TRUE) * first(AREA_USED), # Mean carbon
+             # Estimation unit variances
+            aVar = (first(AREA_USED)^2 / sum(P2POINTCNT)) *
+              (sum(P2POINTCNT*w*aVar) + sum((1-w)*(P2POINTCNT/sum(P2POINTCNT))*aVar)),
+            carbVar = (first(AREA_USED)^2 / sum(P2POINTCNT)) *
+              (sum(P2POINTCNT*w*carbVar) + sum((1-w)*(P2POINTCNT/sum(P2POINTCNT))*carbVar)),
+            # Estimation unit covariances
+            carbCV = (first(AREA_USED)^2 / sum(P2POINTCNT)) *
+              (sum(P2POINTCNT*w*carbCV) + sum((1-w)*(P2POINTCNT/sum(P2POINTCNT))*carbCV)), 
+            .groups = 'drop')
+```
+
+```{r}
+#| label: with-sample-error-estimators-estn-level
+
+# sum across Estimation Units for totals
+carb_pop <- carb_pop_eu |>
+  group_by(YEAR) |>
+  summarize(AREA_TOTAL = sum(aEst, na.rm = TRUE),
+            CARB_TOTAL = sum(carbEst, na.rm = TRUE),
+            # Ratios
+            CARB_ACRE = CARB_TOTAL / AREA_TOTAL,
+            # Total samping errors
+            AREA_TOTAL_SE = sqrt(sum(aVar, na.rm = TRUE)) / AREA_TOTAL * 100,
+            CARB_TOTAL_SE = sqrt(sum(carbVar, na.rm = TRUE)) / CARB_TOTAL * 100,
+            # Ratio variances
+            carbAcreVar = (1 / AREA_TOTAL^2) * (sum(carbVar) + 
+                          (CARB_ACRE^2) * sum(aVar) - 
+                          2 * CARB_ACRE * sum(carbCV)),
+            CARB_ACRE_SE = sqrt(sum(carbAcreVar, na.rm = TRUE)) / 
+                                   CARB_ACRE * 100) |>
+  mutate(method = "forestTIME") |>
+  
+  # Re ordering
+  select(YEAR, 
+         carbon_ton_acre = CARB_ACRE, 
+         carbon_total = CARB_TOTAL, 
+         AREA_TOTAL, 
+         method)
+
+mean(carb_pop$carbon_ton_acre)
+```
+
+```{r}
+#| label: plot-with-sample-error-results
+
+all <- bind_rows(agc_rfia_annual, agc_rfia_ti, agc_pop)
+
+ggplot(all, aes(x = YEAR, y = carbon_total, color = method)) +
+  geom_line() +
+  labs(y = "Total Carbon (tons)")
+
+ggplot(all, aes(x = YEAR, y = carbon_ton_acre, color = method)) +
+  geom_line() +
+  labs(y = "Mean Carbon/Acre (tons/acre)")
+
+```
