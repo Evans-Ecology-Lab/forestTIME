@@ -15,7 +15,7 @@ knitr:
     collapse: true
     comment: '#>'
 execute: 
-  eval: false
+  eval: true
 ---
 
 ```{r}
