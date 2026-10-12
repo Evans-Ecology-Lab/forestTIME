@@ -117,7 +117,7 @@
 <div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fia_tidy.html">fia_tidy</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Wrangling data</span></span>
-<span><span class="co">#&gt; ✔ Wrangling data [632ms]</span></span>
+<span><span class="co">#&gt; ✔ Wrangling data [704ms]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="va">data</span></span></code></pre></div>
 <div class="cell-output-display">
@@ -147,13 +147,13 @@
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Expanding years between surveys</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [5.8s]</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [5.2s]</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">21.7</span>s]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">19.6</span>s]</span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">25.3</span>s]</span></code></pre></div>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">23.1</span>s]</span></code></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data_midpt_stepwise <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
@@ -163,13 +163,13 @@
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Expanding years between surveys</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [5.7s]</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✔ Expanding years between surveys [5.2s]</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">21.1</span>s]</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>✔ Interpolating between surveys [<span class="fl">18.4</span>s]</span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">24.8</span>s]</span></code></pre></div>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>✔ Adjusting <span class="cf">for</span> mortality [<span class="fl">22.3</span>s]</span></code></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
@@ -182,7 +182,7 @@
 <div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_expanded</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/expand_data.html">expand_data</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Expanding years between surveys</span></span>
-<span><span class="co">#&gt; ✔ Expanding years between surveys [6s]</span></span>
+<span><span class="co">#&gt; ✔ Expanding years between surveys [5.4s]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="va">data_expanded</span></span></code></pre></div>
 <div class="cell-output-display">
@@ -198,7 +198,7 @@
 <div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_interpolated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/interpolate_data.html">interpolate_data</a></span><span class="op">(</span><span class="va">data_expanded</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Interpolating between surveys</span></span>
-<span><span class="co">#&gt; ✔ Interpolating between surveys [15s]</span></span>
+<span><span class="co">#&gt; ✔ Interpolating between surveys [12.9s]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="va">data_interpolated</span></span></code></pre></div>
 <div class="cell-output-display">
@@ -216,11 +216,11 @@
 <span><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
 <span><span class="co">#&gt; Warning: ! No recorded `MORTYR` in data.</span></span>
 <span><span class="co">#&gt; ℹ Setting `use_mortyr` to `FALSE`</span></span>
-<span><span class="co">#&gt; ✔ Adjusting for mortality [3.6s]</span></span>
+<span><span class="co">#&gt; ✔ Adjusting for mortality [3.5s]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="va">data_midpt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adjust_mortality.html">adjust_mortality</a></span><span class="op">(</span><span class="va">data_interpolated</span>, use_mortyr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Adjusting for mortality</span></span>
-<span><span class="co">#&gt; ✔ Adjusting for mortality [3.6s]</span></span>
+<span><span class="co">#&gt; ✔ Adjusting for mortality [3.5s]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">data_mortyr</span>, <span class="va">data_midpt</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
@@ -233,19 +233,20 @@
 <div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_midpt_carbon</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fia_allometry.html">fia_allometry</a></span><span class="op">(</span><span class="va">data_midpt</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Prepping for estimating carbon</span></span>
-<span><span class="co">#&gt; ✔ Prepping for estimating carbon [323ms]</span></span>
+<span><span class="co">#&gt; ✔ Prepping for estimating carbon [404ms]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ⠙ Estimating carbon: prepping data</span></span>
-<span><span class="co">#&gt; ⠹ Estimating carbon: predicting merchantable stem wood volume</span></span>
-<span><span class="co">#&gt; ⠸ Estimating carbon: predicting stump wood volume</span></span>
-<span><span class="co">#&gt; ⠼ Estimating carbon: predicting sawlog stem wood volume</span></span>
-<span><span class="co">#&gt; ⠴ Estimating carbon: predicting sawlog stem wood and bark volume</span></span>
-<span><span class="co">#&gt; ⠦ Estimating carbon: predicting total stem bark weight</span></span>
-<span><span class="co">#&gt; ⠧ Estimating carbon: harmonizing components</span></span>
-<span><span class="co">#&gt; ✔ Estimating carbon: harmonizing components [30.1s]</span></span>
+<span><span class="co">#&gt; ⠹ Estimating carbon: predicting total stem wood and bark volume</span></span>
+<span><span class="co">#&gt; ⠸ Estimating carbon: predicting merchantable stem wood volume</span></span>
+<span><span class="co">#&gt; ⠼ Estimating carbon: predicting stump wood volume</span></span>
+<span><span class="co">#&gt; ⠴ Estimating carbon: predicting sawlog stem wood volume</span></span>
+<span><span class="co">#&gt; ⠦ Estimating carbon: predicting sawlog stem wood and bark volume</span></span>
+<span><span class="co">#&gt; ⠧ Estimating carbon: predicting total biomass</span></span>
+<span><span class="co">#&gt; ⠇ Estimating carbon: predicting foliage weight</span></span>
+<span><span class="co">#&gt; ✔ Estimating carbon: harmonizing components [32.6s]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Joining carbon estimation results</span></span>
-<span><span class="co">#&gt; ✔ Joining carbon estimation results [60ms]</span></span>
+<span><span class="co">#&gt; ✔ Joining carbon estimation results [68ms]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="va">data_midpt_carbon</span></span></code></pre></div>
 <div class="cell-output-display">
