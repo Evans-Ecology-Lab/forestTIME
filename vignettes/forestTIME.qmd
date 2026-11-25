@@ -111,8 +111,8 @@ data_midpt <- fia_annualize(data, use_mortyr = FALSE)
 #| label: stepwise
 data_midpt_stepwise <- data |>
   expand_data() |> #has placeholder values (e.g. 999) for some variables to ensure correct interpolation
+  adjust_mortality(use_mortyr = FALSE) |>
   interpolate_data() |> #has incorrect values for trees that die or fall between surveys
-  adjust_mortality(use_mortyr = FALSE)
 ```
 
 ```{r}
@@ -131,6 +131,18 @@ data_expanded <- expand_data(data)
 data_expanded
 ```
 
+`adjust_mortality()` adjusts all columns related to mortality (`STATUSCD`, `STANDING_DEAD_CD`, `DECAYCD`, and measurements like `DIA`, `HT`, `ACTUALHT`, `CULL`, `CR` etc.).
+E.g.
+`DECAYCD` only applies to standing dead trees and `STANDING_DEAD_CD` only applies to trees with `STATUSCD` 2 (dead).
+
+```{r}
+#| label: adjust-mort
+data_mortyr <- adjust_mortality(data_expanded, use_mortyr = TRUE)
+data_midpt <- adjust_mortality(data_expanded, use_mortyr = FALSE)
+all.equal(data_mortyr, data_midpt)
+```
+These tables will be identical in states like RI where `MORTYR` is never used, but in states that have records for `MORTYR` these tables would differ slightly for some subset of trees.
+
 `interpolate_data()` then interpolates continuous and categorical variables between surveys.
 Continuous variables are interpolated with `inter_extra_polate()` and categorical variables are interpolated with `step_interp()`.
 `interpolate_data()` also joins in the `TPA_UNADJ` column based on `DESIGNCD` and `DIA`.
@@ -138,22 +150,12 @@ If trees are interpolated to below FIA thresholds for being measured (DIA \< 1, 
 
 ```{r}
 #| label: interpolate-data
-data_interpolated <- interpolate_data(data_expanded)
-data_interpolated
+data_interpolated <- interpolate_data(data_midpt)
+data_interpolated_midpt
+
+data_interpolated <- interpolate_data(data_mortyr)
+data_interpolated_mortyr
 ```
-
-`adjust_mortality()` adjusts all columns related to mortality (`STATUSCD`, `STANDING_DEAD_CD`, `DECAYCD`, and measurements like `DIA`, `HT`, `ACTUALHT`, `CULL`, `CR` etc.).
-E.g.
-`DECAYCD` only applies to standing dead trees and `STANDING_DEAD_CD` only applies to trees with `STATUSCD` 2 (dead).
-
-```{r}
-#| label: adjust-mort
-data_mortyr <- adjust_mortality(data_interpolated, use_mortyr = TRUE)
-data_midpt <- adjust_mortality(data_interpolated, use_mortyr = FALSE)
-all.equal(data_mortyr, data_midpt)
-```
-
-These tables will be identical in states like RI where `MORTYR` is never used, but in states that have records for `MORTYR` these tables would differ slightly for some subset of trees.
 
 ## Carbon Estimation
 
@@ -161,6 +163,6 @@ These tables will be identical in states like RI where `MORTYR` is never used, b
 
 ```{r}
 #| label: prep-carbon
-data_midpt_carbon <- fia_allometry(data_midpt)
+data_midpt_carbon <- fia_allometry(data_interpolated_midpt)
 data_midpt_carbon
 ```
