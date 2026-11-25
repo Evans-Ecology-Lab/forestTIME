@@ -19,17 +19,17 @@
 #'
 #' Things that can happen to a tree from t1 to t2
 #'
-#' Live -> Live
+#' Live (STATUSCD = 1, STANDING_DEAD_CD = NA) -> Live (STATUSCD = 1, STANDING_DEAD_CD = NA)
 #' - If a tree is alive at t1 and at t2 then no adjustment is needed.
 #'
-#' Live -> Standing dead
+#' Live (STATUSCD = 1, STANDING_DEAD_CD = NA) -> Standing dead (STATUSCD = 2, STANDING_DEAD_CD = 1)
 #' - If a tree goes from alive to standing dead, the observed dead-tree measurements from the
 #' second observation are moved back to the transition year so that interpolation occurs
 #' between the live measurements at t1 and the dead measurements at the transition year
 #' (either midpoint or MORTYR). After that point, the tree's standing dead measurements are
 #' held constant until the next observation.
 #'
-#' Standing Dead - > Standing Dead
+#' Standing Dead (STATUSCD = 2, STANDING_DEAD_CD = 1) - > Standing Dead (STATUSCD = 2, STANDING_DEAD_CD = 1)
 #' - Standing dead trees cannot grow. If a later observation has larger values (potentially
 #' due to measurement error) than the ealier standing dead observations, the earlier values
 #' are carried forward, replacing the larger, later values. If later observations are smaller,
