@@ -29,6 +29,7 @@ test_that("variables with NAs get interpolated correctly", {
     )
   data_interpolated <- data |>
     expand_data() |>
+    adjust_mortality() |>
     interpolate_data()
 
   expect_equal(
@@ -48,6 +49,7 @@ test_that("interpolation of CULL is correct", {
 
   data_interpolated <- data |>
     expand_data() |>
+    adjust_mortality() |>
     interpolate_data()
 
   expect_true(
@@ -78,6 +80,7 @@ test_that("CONDPROP_UNADJ sums to ~1", {
 
   data_interpolated <- data |>
     expand_data() |>
+    adjust_mortality() |>
     interpolate_data()
 
   #test that cond props add to 1 within rounding error
