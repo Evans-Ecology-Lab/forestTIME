@@ -32,9 +32,8 @@ test_that("fallen dead trees get NAs correctly", {
     )
   data_interpolated <- data |>
     expand_data() |>
-    interpolate_data() |>
-    adjust_mortality(use_mortyr = FALSE)
-
+    adjust_mortality(use_mortyr = FALSE) |>
+    interpolate_data()
   expect_true(all(is.na(
     data_interpolated |>
       filter(YEAR %in% 2017:2020) |>
@@ -75,8 +74,8 @@ test_that("trees moving to non-sampled conditions have NAs", {
     )
   data_interpolated <- data |>
     expand_data() |>
-    interpolate_data() |>
-    adjust_mortality(use_mortyr = FALSE)
+    adjust_mortality(use_mortyr = FALSE) |>
+    interpolate_data()
   expect_equal(max(data_interpolated$YEAR), 2018)
   expect_true(all(is.na(
     data_interpolated |>
@@ -116,15 +115,15 @@ test_that("method doesn't matter for DE", {
       CARBON_AG,
       DRYBIO_AG
     )
-  data_interpolated <- data |>
+  data_midpt <- data |>
     expand_data() |>
+    adjust_mortality(use_mortyr = FALSE) |>
     interpolate_data()
 
-  data_midpt <- data_interpolated |>
-    adjust_mortality(use_mortyr = FALSE)
-
-  data_mortyr <- data_interpolated |>
-    adjust_mortality(use_mortyr = TRUE)
+  data_mortyr <- data |>
+    expand_data() |>
+    adjust_mortality(use_mortyr = TRUE) |>
+    interpolate_data()
 
   expect_equal(data_midpt, data_mortyr)
 })
@@ -162,8 +161,9 @@ test_that("No values below thresholds for measurement", {
     )
   data_adj <- data |>
     expand_data() |>
-    interpolate_data() |>
-    adjust_mortality()
+    adjust_mortality() |>
+    interpolate_data()
+
 
   expect_equal(
     nrow(data_adj |> filter(ACTUALHT < 4.5)),
@@ -532,7 +532,10 @@ test_that("Negative numbers are dealt with", {
     ) |>
     mutate(CARBON_AG_interpolated = NA, DRYBIO_AG_interpolated = NA)
 
-  data_adj <- adjust_mortality(data_interpolated, use_mortyr = TRUE)
+  data_adj <- data |>
+    expand_data() |>
+    adjust_mortality(use_mortyr = TRUE) |>
+    interpolate_data()
 
   expect_equal(nrow(data_adj |> dplyr::filter(ACTUALHT < 0)), 0)
 })
